@@ -1,0 +1,43 @@
+{
+  "name": "electron-break-timer",
+  "version": "1.0.0",
+  "description": "Electron app that runs in system tray and triggers breaks every 30 minutes",
+  "main": "dist/main.js",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc && electron dist/main.js",
+    "build": "tsc",
+    "dist": "npm run build && electron-builder",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix"
+  },
+  "build": {
+    "appId": "com.thewayofcode.break-timer",
+    "productName": "Break Timer",
+    "directories": {
+      "output": "dist-installer"
+    },
+    "files": [
+      "dist/**/*"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "electron": "^30.0.0",
+    "electron-builder": "^24.0.0",
+    "typescript": "^5.0.0",
+    "eslint": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
