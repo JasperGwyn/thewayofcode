@@ -3,14 +3,16 @@ import { logger } from './log.js';
 import { SettingsManager } from './settings.js';
 import { BreakScheduler } from './scheduler.js';
 import { TrayManager } from './tray.js';
-import { setupIpcHandlers, emitToRenderer } from './ipc.js';
+import { setupIpcHandlers } from './ipc.js';
 import { OverlayManager } from './overlay/OverlayManager.js';
+import { SoundManager } from './sound.js';
 
 // Keep a reference to prevent garbage collection
 let trayManager: TrayManager | null = null;
 let scheduler: BreakScheduler | null = null;
 let settingsManager: SettingsManager | null = null;
 let overlayManager: OverlayManager | null = null;
+let soundManager: SoundManager | null = null;
 
 // Prevent multiple instances
 const gotTheLock = app.requestSingleInstanceLock();
@@ -44,13 +46,30 @@ app.on('ready', async () => {
 
     // Initialize scheduler with break event handler
     scheduler = new BreakScheduler(settings, {
-      onBreakStart: () => {
-        logger.info('Break started - IPC event emitted');
-        // The IPC event is already sent in the scheduler
+      onBreakStart: (breakSeconds: number) => {
+        logger.info('Break started - activating overlays');
+        try {
+          if (overlayManager) {
+            overlayManager.showOverlays(breakSeconds);
+          } else {
+            logger.warn('OverlayManager not ready on break start');
+          }
+        } catch (err) {
+          logger.error('Failed to activate overlays on break start', err);
+        }
       },
       onBreakEnd: () => {
-        logger.info('Break ended - IPC event emitted');
-        // The IPC event is already sent in the scheduler
+        logger.info('Break ended - hiding overlays');
+        try {
+          if (overlayManager) {
+            overlayManager.hideOverlays();
+          }
+          if (soundManager) {
+            soundManager.playEndSound();
+          }
+        } catch (err) {
+          logger.error('Failed to finalize break end actions', err);
+        }
       },
     });
 
@@ -59,28 +78,20 @@ app.on('ready', async () => {
     overlayManager = new OverlayManager();
     logger.info('OverlayManager initialized successfully');
 
+    // Initialize sound manager
+    soundManager = new SoundManager();
+
     // Initialize tray
     trayManager = new TrayManager(scheduler, settingsManager, overlayManager);
     await trayManager.createTray();
 
     // Setup IPC handlers
-    setupIpcHandlers(settingsManager, scheduler, trayManager);
+    setupIpcHandlers(settingsManager, scheduler, trayManager, soundManager ?? undefined);
 
     // Start the scheduler
     scheduler.start();
 
-    // For testing: trigger break immediately with 10 seconds
-    if (process.env.NODE_ENV === 'development' && scheduler) {
-      logger.info('Development mode: triggering test break in 3 seconds');
-      logger.info(`NODE_ENV is set to: ${process.env.NODE_ENV}`);
-      setTimeout(() => {
-        logger.info('Triggering test break...');
-        // Simulate break start event directly
-        const testBreakSeconds = 10;
-        logger.info(`Test: Emitting break:start with ${testBreakSeconds} seconds`);
-        emitToRenderer('break:start', testBreakSeconds);
-      }, 3000);
-    }
+    // Test mode removed: app starts scheduler only; no auto-overlay.
 
     logger.info('Break Timer app started successfully');
   } catch (error) {
@@ -107,6 +118,10 @@ app.on('before-quit', () => {
 
   if (overlayManager) {
     overlayManager.destroy();
+  }
+
+  if (soundManager) {
+    soundManager.destroy();
   }
 });
 

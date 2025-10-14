@@ -10,6 +10,9 @@ export class TrayManager {
   private scheduler: BreakScheduler;
   private settingsManager: SettingsManager;
   private overlayManager: OverlayManager;
+  private menuUpdateTimer: NodeJS.Timeout | null = null;
+  private isMenuUpdating: boolean = false;
+  private cachedSettings: AppSettings | null = null;
 
   constructor(scheduler: BreakScheduler, settingsManager: SettingsManager, overlayManager: OverlayManager) {
     this.scheduler = scheduler;
@@ -76,7 +79,27 @@ export class TrayManager {
       this.tray = new Tray(img);
       this.tray.setToolTip('Break Timer - Take regular breaks');
 
+      // Preload settings and build initial menu
+      this.cachedSettings = await this.settingsManager.loadSettings();
       await this.updateContextMenu();
+
+      // Refresh the menu right before showing it so the countdown is current
+      this.tray.on('right-click', async () => {
+        // No-op here; menu auto-opens. A periodic refresher keeps it current.
+      });
+
+      // Periodically refresh the menu so the countdown stays current
+      this.menuUpdateTimer = setInterval(async () => {
+        if (this.isMenuUpdating || !this.tray) return;
+        this.isMenuUpdating = true;
+        try {
+          await this.updateContextMenu();
+        } catch (err) {
+          logger.warn('Tray menu periodic refresh failed', err);
+        } finally {
+          this.isMenuUpdating = false;
+        }
+      }, 1000);
       logger.info('Tray created successfully');
     } catch (error) {
       logger.error('Failed to create tray', error);
@@ -92,18 +115,27 @@ export class TrayManager {
       ? `Resume (paused for ${status.nextBreakIn} min)`
       : 'Pause for 1 hour';
 
-    // Load current settings to check startWithWindows status
-    const currentSettings = await this.settingsManager.loadSettings();
+    // Load current settings (use cached when available)
+    const currentSettings = this.cachedSettings ?? await this.settingsManager.loadSettings();
+    this.cachedSettings = currentSettings;
     const startWithWindowsLabel = currentSettings.startWithWindows
       ? '✓ Start with Windows'
       : 'Start with Windows';
 
+    // Compute a human-readable remaining time label
+    const remainingLabel = this.getRemainingTimeLabel(status, currentSettings);
+
     const contextMenu = Menu.buildFromTemplate([
+      {
+        // Read-only status line with the countdown
+        label: remainingLabel,
+        enabled: false,
+      },
+      { type: 'separator' },
       {
         label: pauseLabel,
         click: () => this.handlePauseToggle(),
       },
-      { type: 'separator' },
       {
         label: startWithWindowsLabel,
         click: () => this.handleStartWithWindowsToggle(),
@@ -129,6 +161,42 @@ export class TrayManager {
     this.tray.setContextMenu(contextMenu);
   }
 
+  private getRemainingTimeLabel(
+    status: ReturnType<BreakScheduler['getStatus']>,
+    settings: AppSettings
+  ): string {
+    const now = Date.now();
+
+    // If break is currently active, show remaining break time
+    if (status.isBreakActive) {
+      const breakDurationMs = settings.breakSeconds * 1000;
+      const elapsedMs = Math.max(0, now - status.lastBreakTime.getTime());
+      const remainingMs = Math.max(0, breakDurationMs - elapsedMs);
+      return `⏸ Break active: ${this.formatDuration(remainingMs)}`;
+    }
+
+    // If paused, show time until resume
+    if (status.isPaused && status.pausedUntil) {
+      const remainingMs = Math.max(0, status.pausedUntil.getTime() - now);
+      return `⏸ Paused: resumes in ${this.formatDuration(remainingMs)}`;
+    }
+
+    // Otherwise, show time until next break
+    const intervalMs = settings.intervalMinutes * 60 * 1000;
+    const sinceLastBreakMs = Math.max(0, now - status.lastBreakTime.getTime());
+    const remainingMs = Math.max(0, intervalMs - sinceLastBreakMs);
+    return `Next break in: ${this.formatDuration(remainingMs)}`;
+  }
+
+  private formatDuration(ms: number): string {
+    const totalSeconds = Math.round(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const mm = String(minutes);
+    const ss = String(seconds).padStart(2, '0');
+    return `${mm}:${ss}`;
+  }
+
   private handlePauseToggle(): void {
     const status = this.scheduler.getStatus();
 
@@ -149,13 +217,14 @@ export class TrayManager {
 
   private async handleStartWithWindowsToggle(): Promise<void> {
     try {
-      const currentSettings = await this.settingsManager.loadSettings();
+      const currentSettings = this.cachedSettings ?? await this.settingsManager.loadSettings();
       const newSettings: AppSettings = {
         ...currentSettings,
         startWithWindows: !currentSettings.startWithWindows,
       };
 
       await this.settingsManager.saveSettings(newSettings);
+      this.cachedSettings = newSettings;
       logger.info(`Start with Windows toggled to: ${newSettings.startWithWindows}`);
 
       // Update menu after action
@@ -167,23 +236,9 @@ export class TrayManager {
 
   private async showSettings(): Promise<void> {
     try {
-      const currentSettings = await this.settingsManager.loadSettings();
-
-      // For now, show current settings in a dialog
-      // In the future, this will open a settings window
-      const message = `Current Settings:\n\n` +
-        `Break Interval: ${currentSettings.intervalMinutes} minutes\n` +
-        `Break Duration: ${currentSettings.breakSeconds} seconds\n\n` +
-        `Settings window will be implemented in the next task.`;
-
-      dialog.showMessageBox({
-        type: 'info',
-        title: 'Break Timer Settings',
-        message: 'Settings',
-        detail: message,
-      });
-
-      logger.info('Settings dialog shown');
+      const { createSettingsWindow } = await import('./settings/createSettingsWindow.js');
+      createSettingsWindow();
+      logger.info('Settings window opened');
     } catch (error) {
       logger.error('Failed to show settings', error);
     }
@@ -191,12 +246,12 @@ export class TrayManager {
 
   private async handleForceBreak(): Promise<void> {
     try {
-      const currentSettings = await this.settingsManager.loadSettings();
-
-      logger.info(`Force break triggered from tray menu - duration: ${currentSettings.breakSeconds} seconds`);
+      // Force break: fixed short duration (5 seconds)
+      const durationSeconds = 5;
+      logger.info(`Force break triggered from tray menu - duration: ${durationSeconds} seconds`);
 
       // Trigger overlay directly through OverlayManager
-      this.overlayManager.showOverlays(currentSettings.breakSeconds);
+      this.overlayManager.showOverlays(durationSeconds);
 
       logger.info('Force break activated successfully');
     } catch (error) {
@@ -206,6 +261,8 @@ export class TrayManager {
   }
 
   async updateTrayStatus(): Promise<void> {
+    // Refresh cached settings and menu (used after external settings changes)
+    this.cachedSettings = await this.settingsManager.loadSettings();
     await this.updateContextMenu();
   }
 
@@ -213,6 +270,10 @@ export class TrayManager {
     if (this.tray) {
       this.tray.destroy();
       this.tray = null;
+    }
+    if (this.menuUpdateTimer) {
+      clearInterval(this.menuUpdateTimer);
+      this.menuUpdateTimer = null;
     }
   }
 }

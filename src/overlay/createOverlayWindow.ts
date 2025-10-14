@@ -1,4 +1,5 @@
 import { BrowserWindow, Display } from 'electron';
+import type { RenderProcessGoneDetails } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { logger } from '../log.js';
@@ -83,11 +84,18 @@ export function createOverlayWindow(display: Display, breakSeconds: number): Bro
   });
 
   // Eventos de proceso/render para diagnstico
-  overlayWindow.webContents.on('render-process-gone', (_event, details) => {
-    logger.error(`Overlay render-process-gone (display ${display.id}, winId ${overlayWindow.id}) reason=${(details as { reason?: string }).reason ?? 'unknown'}`);
+  overlayWindow.webContents.on('render-process-gone', (_event, details: RenderProcessGoneDetails) => {
+    const reason = details.reason;
+    if (reason === 'clean-exit') {
+      logger.info(`Overlay render-process-gone clean-exit (display ${display.id}, winId ${overlayWindow.id})`);
+    } else if (reason === 'killed') {
+      logger.warn(`Overlay render-process-gone killed (display ${display.id}, winId ${overlayWindow.id})`);
+    } else {
+      logger.error(`Overlay render-process-gone ${reason} (display ${display.id}, winId ${overlayWindow.id})`);
+    }
   });
   overlayWindow.webContents.on('destroyed', () => {
-    logger.warn(`Overlay webContents destroyed (display ${display.id}, winId ${overlayWindow.id})`);
+    logger.info(`Overlay webContents destroyed (display ${display.id}, winId ${overlayWindow.id})`);
   });
   overlayWindow.on('unresponsive', () => {
     logger.warn(`Overlay window unresponsive (display ${display.id}, winId ${overlayWindow.id})`);
@@ -141,7 +149,7 @@ export function createOverlayWindow(display: Display, breakSeconds: number): Bro
     logger.info(`Overlay window show (display ${display.id}, winId ${overlayWindow.id})`);
   });
   overlayWindow.on('hide', () => {
-    logger.warn(`Overlay window hide (display ${display.id}, winId ${overlayWindow.id})`);
+    logger.info(`Overlay window hide (display ${display.id}, winId ${overlayWindow.id})`);
   });
   overlayWindow.on('enter-full-screen', () => {
     logger.warn(`Overlay window enter-full-screen (display ${display.id}, winId ${overlayWindow.id})`);

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Settings</h1>
+      <form id="settings-form">
+        <label class="field">
+          <span>Break interval (minutes)</span>
+          <input id="interval" type="number" min="1" step="1" required />
+        </label>
+
+        <label class="field">
+          <span>Break duration (seconds)</span>
+          <input id="break" type="number" min="5" step="1" required />
+        </label>
+
+        <label class="checkbox">
+          <input id="autostart" type="checkbox" />
+          <span>Start with Windows</span>
+        </label>
+
+        <div class="actions">
+          <button type="button" id="cancel">Cancel</button>
+          <button type="submit" id="save" class="primary">Save</button>
+        </div>
+      </form>
+      <p id="error" class="error" aria-live="polite"></p>
+    </div>
+    <script src="index.js"></script>
+  </body>
+  </html>
+

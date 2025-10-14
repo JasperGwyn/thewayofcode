@@ -4,7 +4,7 @@ import { emitToRenderer } from './ipc.js';
 import type { AppSettings } from './settings.js';
 
 export interface SchedulerEvents {
-  onBreakStart: () => void;
+  onBreakStart: (_breakSeconds: number) => void;
   onBreakEnd: () => void;
 }
 
@@ -61,12 +61,12 @@ export class BreakScheduler {
     this.isBreakActive = true;
     logger.info(`Break started (duration: ${this.settings.breakSeconds}s)`);
 
-    // Emit IPC event with break duration
+    // Emit IPC event with break duration (for any renderer listeners)
     logger.info(`Scheduler: Emitting break:start with ${this.settings.breakSeconds} seconds`);
     emitToRenderer('break:start', this.settings.breakSeconds);
 
-    // Also call the event handler
-    this.events.onBreakStart();
+    // Notify main listeners directly (OverlayManager, etc.)
+    this.events.onBreakStart(this.settings.breakSeconds);
 
     // Schedule break end
     this.breakTimeoutId = setTimeout(() => {
@@ -112,6 +112,11 @@ export class BreakScheduler {
     }
 
     const intervalMs = this.settings.intervalMinutes * 60 * 1000;
+    // Reset the reference point so the next break countdown starts from now
+    // (unless a break is currently active).
+    if (!this.isBreakActive) {
+      this.lastBreakTime = new Date();
+    }
     this.intervalId = setInterval(() => {
       this.triggerBreak();
     }, intervalMs);

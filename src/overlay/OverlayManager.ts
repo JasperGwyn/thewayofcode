@@ -25,6 +25,7 @@ type OverlayState = {
   pendingUiMessages: OverlayUiMessage[];
   currentArticle: PickedArticle | null;
   allowClose: boolean;
+  displayId: number;
 };
 
 export class OverlayManager {
@@ -62,7 +63,7 @@ export class OverlayManager {
       const srcId = srcWin ? srcWin.id : -1;
       logger.info(`OverlayManager: overlay:close-break received from winId=${srcId} with payload=${JSON.stringify(payload)}`);
       const source = payload?.source ?? 'unknown';
-      if (source !== 'pill') {
+      if (source !== 'pill' && source !== 'timer') {
         logger.warn(`OverlayManager: Ignoring close request from unexpected source: ${source}`);
         return;
       }
@@ -106,6 +107,7 @@ export class OverlayManager {
           pendingUiMessages: [],
           currentArticle: article,
           allowClose: false,
+          displayId: display.id,
         };
         this.overlayStates.set(overlayWindow, overlayState);
 
@@ -125,14 +127,12 @@ export class OverlayManager {
           // Block unexpected window closes (e.g., accidental OS gestures)
           if (!overlayState.allowClose) {
             event.preventDefault();
-            const displayId = this.getDisplayIdForWindow(overlayWindow);
-            logger.warn(`OverlayManager: Prevented unintended overlay window close (winId=${overlayWindow.id}, display=${displayId ?? 'unknown'})`);
+            logger.warn(`OverlayManager: Prevented unintended overlay window close (winId=${overlayWindow.id}, display=${overlayState.displayId})`);
           }
         });
 
         overlayWindow.on('closed', () => {
-          const displayId = this.getDisplayIdForWindow(overlayWindow);
-          logger.info(`OverlayManager: Overlay window closed (winId=${overlayWindow.id}, display=${displayId ?? 'unknown'})`);
+          logger.info(`OverlayManager: Overlay window closed (winId=${overlayWindow.id}, display=${overlayState.displayId})`);
           this.cleanupOverlayState(overlayWindow);
         });
       }

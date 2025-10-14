@@ -26,10 +26,12 @@ export class SettingsManager {
 
   constructor() {
     this.settingsPath = path.join(app.getPath('userData'), SETTINGS_FILE_NAME);
+    logger.info(`SettingsManager: settings path resolved to ${this.settingsPath}`);
   }
 
   async loadSettings(): Promise<AppSettings> {
     try {
+      logger.info(`SettingsManager: loading settings from ${this.settingsPath}`);
       const data = await fs.readFile(this.settingsPath, 'utf-8');
       const parsed = JSON.parse(data) as Partial<AppSettings>;
 
@@ -49,7 +51,12 @@ export class SettingsManager {
       logger.info(`Settings loaded: interval=${settings.intervalMinutes}min, break=${settings.breakSeconds}s, startWithWindows=${settings.startWithWindows}`);
       return settings;
     } catch (error) {
-      logger.warn('Failed to load settings, using defaults', error);
+      const err = error as NodeJS.ErrnoException;
+      if (err.code === 'ENOENT') {
+        logger.warn(`SettingsManager: settings file not found at ${this.settingsPath}; using defaults`);
+      } else {
+        logger.warn(`SettingsManager: failed to load settings from ${this.settingsPath} (code=${err.code ?? 'unknown'}) - using defaults`, error);
+      }
       return { ...DEFAULT_SETTINGS };
     }
   }
@@ -111,5 +118,9 @@ export class SettingsManager {
       logger.error('Failed to apply auto-start setting', error);
       // Don't throw here to avoid blocking settings save
     }
+  }
+
+  getSettingsPath(): string {
+    return this.settingsPath;
   }
 }

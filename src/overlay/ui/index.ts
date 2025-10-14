@@ -10,6 +10,7 @@ type ArticleLoadedPayload = {
 type OverlayApi = {
   sendLog(_message: string): void;
   requestCloseBreak(): void;
+  requestCloseBreakByTimer(): void;
   onInit(_handler: (_payload: OverlayInitPayload) => void): void;
   onArticleLoaded(_handler: (_payload: ArticleLoadedPayload) => void): void;
 };
@@ -37,6 +38,7 @@ function getOverlayApi(): OverlayApi {
 function getBoundFunctions(): {
   sendLog(_message: string): void;
   requestCloseBreak(): void;
+  requestCloseBreakByTimer(): void;
   onInit(_handler: (_payload: OverlayInitPayload) => void): void;
   onArticleLoaded(_handler: (_payload: ArticleLoadedPayload) => void): void;
 } {
@@ -49,6 +51,9 @@ function getBoundFunctions(): {
     requestCloseBreak(): void {
       api.requestCloseBreak();
     },
+    requestCloseBreakByTimer(): void {
+      api.requestCloseBreakByTimer();
+    },
     onInit(handler: (_payload: OverlayInitPayload) => void): void {
       api.onInit(handler);
     },
@@ -58,7 +63,7 @@ function getBoundFunctions(): {
   };
 }
 
-const { sendLog, requestCloseBreak, onInit, onArticleLoaded } = getBoundFunctions();
+const { sendLog, requestCloseBreak, requestCloseBreakByTimer, onInit, onArticleLoaded } = getBoundFunctions();
 
 // Log inicial para confirmar que el script se carga
 const overlayPosition = { x: window.screenX, y: window.screenY };
@@ -127,6 +132,9 @@ function startCountdown(): void {
         clearInterval(countdownInterval);
         countdownInterval = null;
       }
+      // Solicitar cierre automático por fin del timer
+      sendLog('Timer ended - requesting close (auto)');
+      requestCloseBreakByTimer();
       return;
     }
 
