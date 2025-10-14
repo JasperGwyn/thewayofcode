@@ -1,4 +1,4 @@
-import { app, Menu, Tray, dialog, nativeImage } from 'electron';
+import { app, Menu, Tray, nativeImage } from 'electron';
 import path from 'path';
 import { logger } from './log.js';
 import type { BreakScheduler } from './scheduler.js';
@@ -144,10 +144,7 @@ export class TrayManager {
         label: 'Settings...',
         click: () => this.showSettings(),
       },
-      {
-        label: '🔥 Force Break Now',
-        click: () => this.handleForceBreak(),
-      },
+      // Removed Force Break Now option to simplify tray menu
       { type: 'separator' },
       {
         label: 'Quit',
@@ -244,21 +241,7 @@ export class TrayManager {
     }
   }
 
-  private async handleForceBreak(): Promise<void> {
-    try {
-      // Force break: fixed short duration (5 seconds)
-      const durationSeconds = 5;
-      logger.info(`Force break triggered from tray menu - duration: ${durationSeconds} seconds`);
-
-      // Trigger overlay directly through OverlayManager
-      this.overlayManager.showOverlays(durationSeconds);
-
-      logger.info('Force break activated successfully');
-    } catch (error) {
-      logger.error('Failed to force break', error);
-      dialog.showErrorBox('Error', 'Failed to start break overlay');
-    }
-  }
+  // Force Break action removed per request
 
   async updateTrayStatus(): Promise<void> {
     // Refresh cached settings and menu (used after external settings changes)

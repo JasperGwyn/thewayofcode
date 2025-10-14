@@ -6,6 +6,7 @@ import { TrayManager } from './tray.js';
 import { setupIpcHandlers } from './ipc.js';
 import { OverlayManager } from './overlay/OverlayManager.js';
 import { SoundManager } from './sound.js';
+import { IdleManager } from './idle.js';
 
 // Keep a reference to prevent garbage collection
 let trayManager: TrayManager | null = null;
@@ -13,6 +14,7 @@ let scheduler: BreakScheduler | null = null;
 let settingsManager: SettingsManager | null = null;
 let overlayManager: OverlayManager | null = null;
 let soundManager: SoundManager | null = null;
+let idleManager: IdleManager | null = null;
 
 // Prevent multiple instances
 const gotTheLock = app.requestSingleInstanceLock();
@@ -93,6 +95,10 @@ app.on('ready', async () => {
     // Start the scheduler
     scheduler.start();
 
+    // Start idle detection (standby when inactive/monitors off)
+    idleManager = new IdleManager(scheduler, overlayManager);
+    idleManager.start();
+
     // Test mode removed: app starts scheduler only; no auto-overlay.
 
     logger.info('Break Timer app started successfully');
@@ -124,6 +130,10 @@ app.on('before-quit', () => {
 
   if (soundManager) {
     soundManager.destroy();
+  }
+
+  if (idleManager) {
+    idleManager.stop();
   }
 });
 

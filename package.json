@@ -1,6 +1,6 @@
 {
   "name": "electron-break-timer",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Electron app that runs in system tray and triggers breaks every 30 minutes",
   "main": "dist/main.js",
   "type": "module",
@@ -9,7 +9,7 @@
     "copy-overlay-assets": "powershell -Command \"New-Item -ItemType Directory -Force dist/overlay/ui; Copy-Item src/overlay/ui/index.html dist/overlay/ui/; Copy-Item src/overlay/ui/styles.css dist/overlay/ui/; New-Item -ItemType Directory -Force dist/settings/ui; Copy-Item src/settings/ui/index.html dist/settings/ui/; Copy-Item src/settings/ui/styles.css dist/settings/ui/\"",
     "build": "tsc && npm run copy-overlay-assets",
     "package": "npm run build && electron-packager . \"The Way of Code - Break Timer\" --platform=win32 --arch=x64 --out=dist-installer --overwrite",
-    "zip": "powershell \"Compress-Archive -Path 'dist-installer\\The Way of Code - Break Timer-win32-x64' -DestinationPath 'dist-installer\\The Way of Code - Break Timer v1.0.0.zip' -Force\"",
+    "zip": "powershell \"Compress-Archive -Path 'dist-installer\\The Way of Code - Break Timer-win32-x64' -DestinationPath ('dist-installer\\The Way of Code - Break Timer v' + $env:npm_package_version + '.zip') -Force\"",
     "dist": "npm run package && npm run zip",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix"
