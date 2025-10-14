@@ -40,7 +40,9 @@ npm run dist
 
 - `npm run dev` - Compila TypeScript y ejecuta Electron
 - `npm run build` - Compila TypeScript a JavaScript
-- `npm run dist` - Crea el instalador (.exe) usando electron-builder
+- `npm run package` - Crea el directorio empaquetado usando electron-packager
+- `npm run zip` - Crea archivo ZIP del directorio empaquetado
+- `npm run dist` - Crea distribución completa (empaquetado + ZIP)
 - `npm run lint` - Ejecuta ESLint
 - `npm run lint:fix` - Ejecuta ESLint y corrige errores automáticamente
 
@@ -87,21 +89,33 @@ La app emite logs detallados:
 
 ## 📦 Build y Distribución
 
-### Crear Instalador
+### Agregar Ícono Personalizado (Opcional)
+
+Coloca tu ícono en `assets/icons/tray-icon.png` o `assets/icons/tray-icon.ico` (formatos PNG/ICO, 16x16 píxeles recomendado para tray)
+
+### Crear Distribución
 
 ```bash
 npm run dist
 ```
 
 Esto genera:
-- `dist-installer/Break Timer Setup X.X.X.exe` - Instalador NSIS para Windows
+- `dist-installer/Break Timer-win32-x64/` - Directorio con la aplicación empaquetada (con ícono personalizado si existe)
+- `dist-installer/Break Timer v1.0.0.zip` - Archivo ZIP para distribución
+
+### Nota sobre el Instalador
+
+Debido a limitaciones de permisos en Windows 11 con electron-builder, se usa electron-packager para crear el empaquetado y se distribuye como ZIP. Los usuarios pueden:
+
+1. Descargar y extraer el ZIP
+2. Ejecutar `Break Timer.exe` directamente
+3. Para "instalación" completa, copiar el directorio a `C:\Program Files\` manualmente
 
 ### Configuración de Build
 
-La configuración está en `package.json` bajo la sección `build`:
-- App ID: `com.thewayofcode.break-timer`
-- Formato: NSIS installer
-- Arquitectura: x64
+- **Empaquetado**: electron-packager
+- **Arquitectura**: x64 para Windows
+- **Formato**: Directorio portable + ZIP
 
 ## 🔧 Configuración
 
@@ -152,3 +166,8 @@ La configuración está en `package.json` bajo la sección `build`:
 ### Timer no funciona
 - Verificar que el scheduler esté inicializado en logs
 - Comprobar que no esté pausado
+
+### Problemas con la distribución
+- Se usa electron-packager + ZIP en lugar de electron-builder debido a problemas de permisos con winCodeSign en Windows 11
+- Para "instalar": extraer el ZIP `Break Timer v1.0.0.zip` y ejecutar `Break Timer.exe`
+- La app funciona igual que si estuviera "instalada" tradicionalmente

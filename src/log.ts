@@ -3,9 +3,9 @@
  */
 
 export interface Logger {
-  info: (message: string, ...args: unknown[]) => void;
-  warn: (message: string, ...args: unknown[]) => void;
-  error: (message: string, ...args: unknown[]) => void;
+  info: (_message: string, ..._args: unknown[]) => void;
+  warn: (_message: string, ..._args: unknown[]) => void;
+  error: (_message: string, ..._args: unknown[]) => void;
 }
 
 const createLogger = (prefix: string = '[BreakTimer]'): Logger => {

@@ -1,0 +1,21 @@
+appId: com.thewayofcode.break-timer
+productName: Break Timer
+
+directories:
+  output: dist-installer
+
+files:
+  - dist/**/*
+
+win:
+  target: nsis
+  sign: false
+  verifyUpdateCodeSignature: false
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+
+# Disable code signing completely
+afterSign: false
+beforeBuild: false

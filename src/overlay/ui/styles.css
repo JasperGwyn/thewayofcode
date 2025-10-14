@@ -1,0 +1,164 @@
+/* Reset y configuración base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: transparent;
+  overflow: hidden;
+}
+
+/* Overlay principal - cubre toda la pantalla */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* Header minimal */
+.overlay-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  color: #ffffff;
+}
+
+.app-title {
+  font-size: 2.5rem;
+  font-weight: 300;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.break-message {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+/* Contenido principal */
+.overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+}
+
+/* Contenedor del timer */
+.timer-container {
+  text-align: center;
+  color: #ffffff;
+}
+
+.timer-display {
+  font-size: 5rem;
+  font-weight: 200;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 1rem;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+  letter-spacing: 0.1em;
+}
+
+.timer-label {
+  font-size: 1.2rem;
+  opacity: 0.8;
+  font-weight: 400;
+  text-transform: lowercase;
+}
+
+/* Acciones */
+.actions {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Botón cerrar */
+.close-button {
+  background: #0078d4;
+  color: #ffffff;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  min-width: 120px;
+}
+
+.close-button:hover {
+  background: #106ebe;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.close-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.close-button:focus {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* Animaciones sutiles */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.overlay {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Responsive - asegurar que funcione en diferentes tamaños de pantalla */
+@media (max-width: 768px) {
+  .app-title {
+    font-size: 2rem;
+  }
+
+  .timer-display {
+    font-size: 3.5rem;
+  }
+
+  .close-button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-height: 600px) {
+  .overlay-content {
+    gap: 1.5rem;
+  }
+
+  .overlay-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .timer-display {
+    font-size: 3.5rem;
+    margin-bottom: 0.5rem;
+  }
+}

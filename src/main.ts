@@ -1,13 +1,16 @@
-import { app, ipcMain } from 'electron';
+import { app } from 'electron';
 import { logger } from './log.js';
 import { SettingsManager } from './settings.js';
 import { BreakScheduler } from './scheduler.js';
 import { TrayManager } from './tray.js';
+import { setupIpcHandlers, emitToRenderer } from './ipc.js';
+import { OverlayManager } from './overlay/OverlayManager.js';
 
 // Keep a reference to prevent garbage collection
 let trayManager: TrayManager | null = null;
 let scheduler: BreakScheduler | null = null;
 let settingsManager: SettingsManager | null = null;
+let overlayManager: OverlayManager | null = null;
 
 // Prevent multiple instances
 const gotTheLock = app.requestSingleInstanceLock();
@@ -24,9 +27,20 @@ app.on('ready', async () => {
   try {
     logger.info('Break Timer app starting...');
 
-    // Initialize settings
+    // Initialize settings manager first
     settingsManager = new SettingsManager();
-    const settings = await settingsManager.loadSettings();
+
+    // Load settings (will use defaults if file doesn't exist)
+    let settings;
+    try {
+      settings = await settingsManager.loadSettings();
+    } catch (error) {
+      logger.warn('Failed to load settings, using defaults', error);
+      settings = settingsManager.getDefaultSettings();
+    }
+
+    // Apply auto-start setting on startup
+    await settingsManager.applyAutoStartSetting(settings.startWithWindows);
 
     // Initialize scheduler with break event handler
     scheduler = new BreakScheduler(settings, {
@@ -34,14 +48,39 @@ app.on('ready', async () => {
         logger.info('Break started - IPC event emitted');
         // The IPC event is already sent in the scheduler
       },
+      onBreakEnd: () => {
+        logger.info('Break ended - IPC event emitted');
+        // The IPC event is already sent in the scheduler
+      },
     });
 
+    // Initialize overlay manager
+    logger.info('Initializing OverlayManager...');
+    overlayManager = new OverlayManager();
+    logger.info('OverlayManager initialized successfully');
+
     // Initialize tray
-    trayManager = new TrayManager(scheduler, settingsManager);
+    trayManager = new TrayManager(scheduler, settingsManager, overlayManager);
     await trayManager.createTray();
+
+    // Setup IPC handlers
+    setupIpcHandlers(settingsManager, scheduler, trayManager);
 
     // Start the scheduler
     scheduler.start();
+
+    // For testing: trigger break immediately with 10 seconds
+    if (process.env.NODE_ENV === 'development' && scheduler) {
+      logger.info('Development mode: triggering test break in 3 seconds');
+      logger.info(`NODE_ENV is set to: ${process.env.NODE_ENV}`);
+      setTimeout(() => {
+        logger.info('Triggering test break...');
+        // Simulate break start event directly
+        const testBreakSeconds = 10;
+        logger.info(`Test: Emitting break:start with ${testBreakSeconds} seconds`);
+        emitToRenderer('break:start', testBreakSeconds);
+      }, 3000);
+    }
 
     logger.info('Break Timer app started successfully');
   } catch (error) {
@@ -67,53 +106,13 @@ app.on('before-quit', () => {
   if (trayManager) {
     trayManager.destroy();
   }
+
+  if (overlayManager) {
+    overlayManager.destroy();
+  }
 });
 
-// IPC handlers for future use (settings window, etc.)
-ipcMain.handle('get-settings', async () => {
-  if (!settingsManager) {
-    throw new Error('Settings manager not initialized');
-  }
-  return await settingsManager.loadSettings();
-});
-
-ipcMain.handle('save-settings', async (_event, newSettings) => {
-  if (!settingsManager) {
-    throw new Error('Settings manager not initialized');
-  }
-
-  await settingsManager.saveSettings(newSettings);
-
-  if (scheduler) {
-    scheduler.updateSettings(newSettings);
-  }
-
-  if (trayManager) {
-    trayManager.updateTrayStatus();
-  }
-
-  return true;
-});
-
-ipcMain.handle('get-scheduler-status', () => {
-  if (!scheduler) {
-    throw new Error('Scheduler not initialized');
-  }
-  return scheduler.getStatus();
-});
-
-ipcMain.handle('pause-scheduler', () => {
-  if (!scheduler) {
-    throw new Error('Scheduler not initialized');
-  }
-  scheduler.pauseForOneHour();
-
-  if (trayManager) {
-    trayManager.updateTrayStatus();
-  }
-
-  return true;
-});
+// IPC handlers are now setup in ipc.ts
 
 // Handle app activation (macOS)
 app.on('activate', () => {

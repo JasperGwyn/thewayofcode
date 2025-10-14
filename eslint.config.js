@@ -21,7 +21,6 @@ export default [
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-empty-function': 'warn',
-      '@typescript-eslint/prefer-const': 'error',
 
       // JavaScript rules
       'no-console': 'error',
@@ -32,10 +31,17 @@ export default [
       'eqeqeq': ['error', 'always'],
       'default-case': 'warn',
       'no-fallthrough': 'error',
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
 
       // Disable some conflicting rules
       'no-undef': 'off', // TypeScript handles this
       'no-redeclare': 'off', // TypeScript handles this
+    },
+  },
+  {
+    files: ['src/log.ts'],
+    rules: {
+      'no-console': 'off', // Allow console in logging module
     },
   },
   {

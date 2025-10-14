@@ -1,15 +1,19 @@
-import { BrowserWindow, ipcMain, powerMonitor } from 'electron';
+import { powerMonitor } from 'electron';
 import { logger } from './log.js';
+import { emitToRenderer } from './ipc.js';
 import type { AppSettings } from './settings.js';
 
 export interface SchedulerEvents {
   onBreakStart: () => void;
+  onBreakEnd: () => void;
 }
 
 export class BreakScheduler {
   private intervalId: NodeJS.Timeout | null = null;
+  private breakTimeoutId: NodeJS.Timeout | null = null;
   private pausedUntil: Date | null = null;
   private lastBreakTime: Date = new Date();
+  private isBreakActive: boolean = false;
   private settings: AppSettings;
   private events: SchedulerEvents;
 
@@ -48,17 +52,48 @@ export class BreakScheduler {
   }
 
   private triggerBreak(): void {
-    this.lastBreakTime = new Date();
-    logger.info('Break triggered');
+    if (this.isBreakActive) {
+      logger.warn('Break already active, skipping trigger');
+      return;
+    }
 
-    // Emit IPC event to main process
-    const windows = BrowserWindow.getAllWindows();
-    windows.forEach(window => {
-      window.webContents.send('break:start');
-    });
+    this.lastBreakTime = new Date();
+    this.isBreakActive = true;
+    logger.info(`Break started (duration: ${this.settings.breakSeconds}s)`);
+
+    // Emit IPC event with break duration
+    logger.info(`Scheduler: Emitting break:start with ${this.settings.breakSeconds} seconds`);
+    emitToRenderer('break:start', this.settings.breakSeconds);
 
     // Also call the event handler
     this.events.onBreakStart();
+
+    // Schedule break end
+    this.breakTimeoutId = setTimeout(() => {
+      this.endBreak();
+    }, this.settings.breakSeconds * 1000);
+  }
+
+  private endBreak(): void {
+    if (!this.isBreakActive) {
+      logger.warn('No active break to end');
+      return;
+    }
+
+    this.isBreakActive = false;
+    logger.info('Break ended');
+
+    // Emit IPC event
+    emitToRenderer('break:end');
+
+    // Also call the event handler
+    this.events.onBreakEnd();
+
+    // Clear timeout
+    if (this.breakTimeoutId) {
+      clearTimeout(this.breakTimeoutId);
+      this.breakTimeoutId = null;
+    }
   }
 
   private scheduleNextBreak(): void {
@@ -95,11 +130,22 @@ export class BreakScheduler {
       clearInterval(this.intervalId);
       this.intervalId = null;
     }
+    if (this.breakTimeoutId) {
+      clearTimeout(this.breakTimeoutId);
+      this.breakTimeoutId = null;
+    }
+    if (this.isBreakActive) {
+      this.endBreak();
+    }
     this.pausedUntil = null;
     logger.info('Break scheduler stopped');
   }
 
   pauseForOneHour(): void {
+    // End any active break before pausing
+    if (this.isBreakActive) {
+      this.endBreak();
+    }
     this.pausedUntil = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
     logger.info('Scheduler paused for 1 hour');
     this.scheduleNextBreak(); // Reschedule to account for pause
@@ -114,6 +160,7 @@ export class BreakScheduler {
   getStatus(): {
     isRunning: boolean;
     isPaused: boolean;
+    isBreakActive: boolean;
     pausedUntil: Date | null;
     nextBreakIn: number | null; // minutes
     lastBreakTime: Date;
@@ -132,6 +179,7 @@ export class BreakScheduler {
     return {
       isRunning: this.intervalId !== null,
       isPaused,
+      isBreakActive: this.isBreakActive,
       pausedUntil: this.pausedUntil,
       nextBreakIn,
       lastBreakTime: this.lastBreakTime,
