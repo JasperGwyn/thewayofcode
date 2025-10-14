@@ -83,7 +83,9 @@ export class SoundManager {
       // Load minimal audio stub in hidden window
       await this.audioWindow.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(html));
       this.isReady = true;
-      try { this.audioWindow.webContents.setAudioMuted(false); } catch {}
+      try { this.audioWindow.webContents.setAudioMuted(false); } catch (e) {
+        logger.warn('Sound: failed to unmute audio');
+      }
     }
   }
 

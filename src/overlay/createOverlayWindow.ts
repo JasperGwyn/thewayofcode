@@ -139,10 +139,9 @@ export function createOverlayWindow(display: Display, breakSeconds: number): Bro
 
   // overlay:init será enviado por OverlayManager cuando la ventana haya cargado
 
-  // Mostrar la ventana cuando esté lista
+  // No mostrar aún; el OverlayManager mostrará la ventana cuando la UI y el webview estén listos
   overlayWindow.once('ready-to-show', () => {
-    overlayWindow.show();
-    logger.info(`Overlay window shown for display ${display.id} - Window is visible: ${overlayWindow.isVisible()}`);
+    logger.info(`Overlay window ready-to-show (display ${display.id}, winId ${overlayWindow.id})`);
   });
 
   overlayWindow.on('show', () => {

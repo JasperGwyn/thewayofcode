@@ -72,6 +72,8 @@ app.on('ready', async () => {
         }
       },
     });
+    // Ensure break end accounts for preload delay so user gets full time
+    scheduler.setDisplayDelayMs(3000);
 
     // Initialize overlay manager
     logger.info('Initializing OverlayManager...');

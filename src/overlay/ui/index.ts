@@ -11,8 +11,10 @@ type OverlayApi = {
   sendLog(_message: string): void;
   requestCloseBreak(): void;
   requestCloseBreakByTimer(): void;
+  notifyReady(): void;
   onInit(_handler: (_payload: OverlayInitPayload) => void): void;
   onArticleLoaded(_handler: (_payload: ArticleLoadedPayload) => void): void;
+  onShowNow(_handler: () => void): void;
 };
 
 interface OverlayWindow extends Window {
@@ -39,8 +41,10 @@ function getBoundFunctions(): {
   sendLog(_message: string): void;
   requestCloseBreak(): void;
   requestCloseBreakByTimer(): void;
+  notifyReady(): void;
   onInit(_handler: (_payload: OverlayInitPayload) => void): void;
   onArticleLoaded(_handler: (_payload: ArticleLoadedPayload) => void): void;
+  onShowNow(_handler: () => void): void;
 } {
   const api = getOverlayApi();
 
@@ -54,16 +58,22 @@ function getBoundFunctions(): {
     requestCloseBreakByTimer(): void {
       api.requestCloseBreakByTimer();
     },
+    notifyReady(): void {
+      api.notifyReady();
+    },
     onInit(handler: (_payload: OverlayInitPayload) => void): void {
       api.onInit(handler);
     },
     onArticleLoaded(handler: (_payload: ArticleLoadedPayload) => void): void {
       api.onArticleLoaded(handler);
     },
+    onShowNow(handler: () => void): void {
+      api.onShowNow(handler);
+    },
   };
 }
 
-const { sendLog, requestCloseBreak, requestCloseBreakByTimer, onInit, onArticleLoaded } = getBoundFunctions();
+const { sendLog, requestCloseBreak, requestCloseBreakByTimer, notifyReady, onInit, onArticleLoaded, onShowNow } = getBoundFunctions();
 
 // Log inicial para confirmar que el script se carga
 const overlayPosition = { x: window.screenX, y: window.screenY };
@@ -84,6 +94,9 @@ sendLog(`DOM elements found - minutes: ${!!minutesElement}, seconds: ${!!seconds
 
 // Estado del contador
 let remainingSeconds = 0;
+let initReceived = false;
+let webviewLoaded = false;
+let countdownStarted = false;
 let countdownInterval: NodeJS.Timeout | null = null;
 
 /**
@@ -170,18 +183,33 @@ function handleTimerPillClick(): void {
 /**
  * Inicializa el overlay cuando recibe datos del proceso main
  */
+function maybeNotifyReady(): void {
+  if (initReceived && webviewLoaded) {
+    // Notificar al main que puede mostrarse
+    notifyReady();
+  }
+}
+
 function initializeOverlay(): void {
   sendLog(`Initializing overlay UI - Window location: ${window.screenX}, ${window.screenY}`);
 
   onInit((data) => {
     sendLog(`Received overlay:init event with data: ${JSON.stringify(data)} at window position: ${window.screenX}, ${window.screenY}`);
     remainingSeconds = data.breakSeconds;
-    startCountdown();
+    initReceived = true;
+    maybeNotifyReady();
   });
 
   onArticleLoaded((data) => {
     sendLog(`Received overlay:article-loaded event: ${JSON.stringify(data)}`);
     loadArticleUrl(data.url);
+  });
+
+  onShowNow(() => {
+    if (!countdownStarted) {
+      countdownStarted = true;
+      startCountdown();
+    }
   });
 }
 
@@ -240,6 +268,8 @@ if (articleView) {
   });
   articleView.addEventListener('did-finish-load', () => {
     sendLog('webview did-finish-load');
+    webviewLoaded = true;
+    maybeNotifyReady();
   });
   articleView.addEventListener('did-fail-load', () => {
     sendLog('webview did-fail-load');

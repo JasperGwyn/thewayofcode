@@ -16,6 +16,7 @@ export class BreakScheduler {
   private isBreakActive: boolean = false;
   private settings: AppSettings;
   private events: SchedulerEvents;
+  private displayDelayMs: number = 0;
 
   constructor(settings: AppSettings, events: SchedulerEvents) {
     this.settings = settings;
@@ -68,10 +69,11 @@ export class BreakScheduler {
     // Notify main listeners directly (OverlayManager, etc.)
     this.events.onBreakStart(this.settings.breakSeconds);
 
-    // Schedule break end
+    // Schedule break end (includes any display delay so UI has full time)
+    const totalBreakMs = this.settings.breakSeconds * 1000 + this.displayDelayMs;
     this.breakTimeoutId = setTimeout(() => {
       this.endBreak();
-    }, this.settings.breakSeconds * 1000);
+    }, totalBreakMs);
   }
 
   private endBreak(): void {
@@ -160,6 +162,11 @@ export class BreakScheduler {
     this.settings = newSettings;
     logger.info(`Settings updated: interval=${newSettings.intervalMinutes}min, break=${newSettings.breakSeconds}s`);
     this.scheduleNextBreak(); // Reschedule with new settings
+  }
+
+  setDisplayDelayMs(ms: number): void {
+    this.displayDelayMs = Math.max(0, Math.floor(ms));
+    logger.info(`Scheduler: display delay set to ${this.displayDelayMs}ms`);
   }
 
   getStatus(): {

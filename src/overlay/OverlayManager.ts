@@ -17,7 +17,8 @@ type OverlayArticleLoadedUiPayload = {
 
 type OverlayUiMessage =
   | { channel: 'overlay:init'; payload: OverlayInitUiPayload }
-  | { channel: 'overlay:article-loaded'; payload: OverlayArticleLoadedUiPayload };
+  | { channel: 'overlay:article-loaded'; payload: OverlayArticleLoadedUiPayload }
+  | { channel: 'overlay:show-now'; payload: Record<string, never> };
 
 type OverlayState = {
   window: BrowserWindow;
@@ -34,6 +35,8 @@ export class OverlayManager {
   private isActive: boolean = false;
   private readonly overlayUiHtmlPath: string;
   private readonly overlayUiPreloadPath: string;
+  private readonly preloadDelayMs: number = 3000;
+  private minShowAtMs: number = 0;
 
   constructor() {
     this.overlayUiHtmlPath = path.join(__dirname, 'ui', 'index.html');
@@ -73,6 +76,36 @@ export class OverlayManager {
       ipcMain.emit('break:end');
       logger.info('OverlayManager: break:end emitted');
     });
+
+    ipcMain.on('overlay:ui-ready', (_event) => {
+      const srcWin = BrowserWindow.fromWebContents(_event.sender);
+      const srcId = srcWin ? srcWin.id : -1;
+      logger.info(`OverlayManager: overlay:ui-ready received from winId=${srcId}`);
+      if (srcWin && !srcWin.isDestroyed()) {
+        try {
+          // Mostrar cuando se cumpla el delay mínimo y la UI esté lista
+          const delay = Math.max(0, this.minShowAtMs - Date.now());
+          setTimeout(() => {
+            try {
+              if (srcWin.isDestroyed()) return;
+              srcWin.show();
+              try { srcWin.setOpacity(1); } catch (error) {
+                logger.warn('OverlayManager: setOpacity(1) failed', error);
+              }
+              const state = this.overlayStates.get(srcWin);
+              if (state) {
+                // Avisar al renderer que puede iniciar el contador
+                this.sendMessageToOverlayUi(state, { channel: 'overlay:show-now', payload: {} });
+              }
+            } catch (err) {
+              logger.error('OverlayManager: Failed to show window after delay', err);
+            }
+          }, delay);
+        } catch (e) {
+          logger.error('OverlayManager: Failed to prepare delayed show after ui-ready', e);
+        }
+      }
+    });
   }
 
   public async showOverlays(breakSeconds: number): Promise<void> {
@@ -83,6 +116,7 @@ export class OverlayManager {
 
     this.isActive = true;
     logger.info('OverlayManager: Showing overlays on all displays');
+    this.minShowAtMs = Date.now() + this.preloadDelayMs;
 
     try {
       let article: PickedArticle;
@@ -262,16 +296,22 @@ export class OverlayManager {
           if (currentStep >= steps) {
             clearInterval(interval);
             // Ensure opacity is 0 just before closing
-            try { window.setOpacity(0); } catch {}
+            try { window.setOpacity(0); } catch (error) {
+              logger.warn('OverlayManager: setOpacity(0) failed', error);
+            }
             window.close();
           }
-        } catch {
+        } catch (error) {
           clearInterval(interval);
-          try { window.close(); } catch {}
+          try { window.close(); } catch (closeError) {
+            logger.warn('OverlayManager: window.close() failed during fade', closeError);
+          }
         }
       }, 16);
-    } catch {
-      try { window.close(); } catch {}
+    } catch (error) {
+      try { window.close(); } catch (closeError) {
+        logger.warn('OverlayManager: window.close() failed (outer)', closeError);
+      }
     }
   }
 }

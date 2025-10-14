@@ -16,8 +16,10 @@ interface ElectronContextBridgeOverlay {
 interface ElectronIpcRendererOverlay {
   send(_channel: 'overlay:log', _message: string): void;
   send(_channel: 'overlay:close-break', _payload: { source: 'pill' | 'timer' }): void;
+  send(_channel: 'overlay:ui-ready'): void;
   on(_channel: 'overlay:init', _listener: (_event: unknown, _data: OverlayInitMessage) => void): void;
   on(_channel: 'overlay:article-loaded', _listener: (_event: unknown, _data: ArticleLoadedMessage) => void): void;
+  on(_channel: 'overlay:show-now', _listener: (_event: unknown) => void): void;
 }
 
 const overlayElectron = require('electron') as {
@@ -39,6 +41,9 @@ overlayContextBridge.exposeInMainWorld('electron', {
     requestCloseBreakByTimer(): void {
       overlayIpcRenderer.send('overlay:close-break', { source: 'timer' });
     },
+    notifyReady(): void {
+      overlayIpcRenderer.send('overlay:ui-ready');
+    },
     onInit(_listener: (_payload: OverlayInitMessage) => void): void {
       overlayIpcRenderer.on('overlay:init', (event, data) => {
         _listener(data);
@@ -47,6 +52,11 @@ overlayContextBridge.exposeInMainWorld('electron', {
     onArticleLoaded(_listener: (_payload: ArticleLoadedMessage) => void): void {
       overlayIpcRenderer.on('overlay:article-loaded', (event, data) => {
         _listener(data);
+      });
+    },
+    onShowNow(_listener: () => void): void {
+      overlayIpcRenderer.on('overlay:show-now', () => {
+        _listener();
       });
     },
   },
