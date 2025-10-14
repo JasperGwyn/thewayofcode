@@ -159,7 +159,8 @@ export class OverlayManager {
           } catch (error) {
             logger.warn('OverlayManager: setClosable(true) not supported', error);
           }
-          window.close();
+          // Fade-out effect before closing (simple, fast)
+          this.fadeOutAndClose(window, 250);
         }
       } catch (error) {
         logger.error('OverlayManager: Error closing overlay window', error);
@@ -240,6 +241,37 @@ export class OverlayManager {
     } catch (error) {
       logger.warn('OverlayManager: Failed to map window to display', error);
       return null;
+    }
+  }
+
+  private fadeOutAndClose(window: BrowserWindow, durationMs: number = 250): void {
+    try {
+      if (window.isDestroyed()) return;
+      const steps = Math.max(1, Math.round(durationMs / 16));
+      const startOpacity = typeof (window as unknown as { getOpacity?: () => number }).getOpacity === 'function'
+        ? (window as unknown as { getOpacity: () => number }).getOpacity()
+        : 1;
+      let currentStep = 0;
+      const interval = setInterval(() => {
+        try {
+          if (window.isDestroyed()) { clearInterval(interval); return; }
+          currentStep++;
+          const t = currentStep / steps;
+          const newOpacity = Math.max(0, startOpacity * (1 - t));
+          window.setOpacity(newOpacity);
+          if (currentStep >= steps) {
+            clearInterval(interval);
+            // Ensure opacity is 0 just before closing
+            try { window.setOpacity(0); } catch {}
+            window.close();
+          }
+        } catch {
+          clearInterval(interval);
+          try { window.close(); } catch {}
+        }
+      }, 16);
+    } catch {
+      try { window.close(); } catch {}
     }
   }
 }
