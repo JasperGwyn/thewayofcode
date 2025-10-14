@@ -1,5 +1,5 @@
 appId: com.thewayofcode.break-timer
-productName: Break Timer
+productName: The Way of Code - Break Timer
 
 directories:
   output: dist-installer

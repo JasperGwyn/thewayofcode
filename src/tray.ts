@@ -77,7 +77,7 @@ export class TrayManager {
       }
 
       this.tray = new Tray(img);
-      this.tray.setToolTip('Break Timer - Take regular breaks');
+      this.tray.setToolTip('The Way of Code - Break Timer');
 
       // Preload settings and build initial menu
       this.cachedSettings = await this.settingsManager.loadSettings();

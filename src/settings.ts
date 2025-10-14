@@ -85,23 +85,39 @@ export class SettingsManager {
     }
 
     try {
-      const appPath = process.execPath;
-      const appName = 'BreakTimer';
-      const regKey = `HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run`;
+      const isPackaged = app.isPackaged;
+      const exePath = process.execPath; // packaged: app exe, dev: electron.exe
+      const devMain = path.join(process.cwd(), 'dist', 'main.js');
+      const args = isPackaged ? [] : [devMain];
 
+      // Primary: Electron login items
+      try {
+        app.setLoginItemSettings({
+          openAtLogin: enabled,
+          openAsHidden: true,
+          path: exePath,
+          args,
+        });
+        const status = app.getLoginItemSettings();
+        logger.info(`Auto-start via login items: openAtLogin=${status.openAtLogin} packaged=${isPackaged}`);
+      } catch (liErr) {
+        logger.warn('LoginItemSettings failed; will fallback to registry', liErr);
+      }
+
+      // Fallback: Windows registry (Run key)
+      const appName = 'The Way of Code - Break Timer';
+      const regKey = `HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run`;
       if (enabled) {
-        // Add to registry
-        const command = `reg add "${regKey}" /v "${appName}" /t REG_SZ /d "\\"${appPath}\\"" /f`;
+        const value = isPackaged ? `"${exePath}"` : `"${exePath}" "${devMain}"`;
+        const command = `reg add "${regKey}" /v "${appName}" /t REG_SZ /d "${value}" /f`;
         await execAsync(command);
         logger.info('Auto-start enabled in Windows registry');
       } else {
-        // Remove from registry
         const command = `reg delete "${regKey}" /v "${appName}" /f`;
         try {
           await execAsync(command);
           logger.info('Auto-start disabled in Windows registry');
-        } catch (deleteError) {
-          // Ignore error if key doesn't exist
+        } catch {
           logger.info('Auto-start key not found in registry (already disabled)');
         }
       }
