@@ -30,9 +30,11 @@ A teaching. A mirror. A whisper from the source.
 
 ## 🔧 Installation
 
-1. [Download the latest release](#) or build from source  
-2. Run it. Forget it.  
-3. Let it remind you to *return*  
+1. Go to the [latest release](https://github.com/JasperGwyn/thewayofcode/releases/latest).
+2. Download the `.zip` for Windows (`v1.0.0` or newer).
+3. Extract it and run **The Way of Code - Break Timer.exe**.
+4. The app will live silently in your system tray.  
+5. It will call you every 30 minutes — to stop, breathe, and listen.
 
 ---
 
