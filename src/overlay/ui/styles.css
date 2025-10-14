@@ -12,153 +12,75 @@ html, body {
   overflow: hidden;
 }
 
-/* Overlay principal - cubre toda la pantalla */
-.overlay {
+/* Webview a pantalla completa de fondo */
+#article-view {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-/* Header minimal */
-.overlay-header {
-  text-align: center;
-  margin-bottom: 3rem;
-  color: #ffffff;
-}
-
-.app-title {
-  font-size: 2.5rem;
-  font-weight: 300;
-  margin-bottom: 0.5rem;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.break-message {
-  font-size: 1.1rem;
-  opacity: 0.9;
-  font-weight: 400;
-}
-
-/* Contenido principal */
-.overlay-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3rem;
-}
-
-/* Contenedor del timer */
-.timer-container {
-  text-align: center;
-  color: #ffffff;
-}
-
-.timer-display {
-  font-size: 5rem;
-  font-weight: 200;
-  font-variant-numeric: tabular-nums;
-  margin-bottom: 1rem;
-  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
-  letter-spacing: 0.1em;
-}
-
-.timer-label {
-  font-size: 1.2rem;
-  opacity: 0.8;
-  font-weight: 400;
-  text-transform: lowercase;
-}
-
-/* Acciones */
-.actions {
-  display: flex;
-  gap: 1rem;
-}
-
-/* Botón cerrar */
-.close-button {
-  background: #0078d4;
-  color: #ffffff;
   border: none;
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
-  font-weight: 500;
-  border-radius: 6px;
+  z-index: 1;
+}
+
+/* Pill del timer - centrado abajo */
+.timer-pill {
+  position: fixed;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-size: 1.5rem;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  min-width: 120px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  z-index: 2; /* Por encima del webview */
+  user-select: none;
+  pointer-events: auto; /* Asegura que la pill capture clicks */
 }
 
-.close-button:hover {
-  background: #106ebe;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+.timer-pill:hover {
+  background: rgba(0, 0, 0, 1);
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
-.close-button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+.timer-pill:active {
+  transform: translateX(-50%) translateY(0);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
 }
 
-.close-button:focus {
-  outline: 2px solid #ffffff;
+.timer-pill:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
   outline-offset: 2px;
 }
 
-/* Animaciones sutiles */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.overlay {
-  animation: fadeIn 0.5s ease-out;
-}
-
-/* Responsive - asegurar que funcione en diferentes tamaños de pantalla */
+/* Responsive */
 @media (max-width: 768px) {
-  .app-title {
-    font-size: 2rem;
-  }
-
-  .timer-display {
-    font-size: 3.5rem;
-  }
-
-  .close-button {
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
+  .timer-pill {
+    top: 1.5rem;
+    padding: 0.6rem 1.2rem;
+    font-size: 1.3rem;
   }
 }
 
 @media (max-height: 600px) {
-  .overlay-content {
-    gap: 1.5rem;
-  }
-
-  .overlay-header {
-    margin-bottom: 1.5rem;
-  }
-
-  .timer-display {
-    font-size: 3.5rem;
-    margin-bottom: 0.5rem;
+  .timer-pill {
+    top: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 1.2rem;
   }
 }

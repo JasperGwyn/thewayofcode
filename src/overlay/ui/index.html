@@ -7,26 +7,12 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="overlay">
-        <header class="overlay-header">
-            <h1 class="app-title">Break Timer</h1>
-            <p class="break-message">Tiempo de descanso en curso</p>
-        </header>
+    <!-- Contenido del artículo a pantalla completa -->
+    <webview id="article-view" src="about:blank"></webview>
 
-        <main class="overlay-content">
-            <div class="timer-container">
-                <div class="timer-display">
-                    <span id="minutes">00</span>:<span id="seconds">00</span>
-                </div>
-                <p class="timer-label">tiempo restante</p>
-            </div>
-
-            <div class="actions">
-                <button id="close-button" class="close-button">
-                    Cerrar
-                </button>
-            </div>
-        </main>
+    <!-- Pill del timer centrado abajo -->
+    <div class="timer-pill" id="timer-pill">
+        <span id="minutes">00</span>:<span id="seconds">00</span>
     </div>
 
     <script src="index.js"></script>

@@ -21,10 +21,11 @@ export function createOverlayWindow(display: Display, breakSeconds: number): Bro
     width: bounds.width,
     height: bounds.height,
 
-    // Configuración fullscreen sin marco
-    fullscreen: true,
+    // Ocupa toda la pantalla sin usar fullscreen del SO
+    fullscreen: false,
     frame: false,
     resizable: false,
+    fullscreenable: false,
 
     // Siempre encima y no en taskbar
     alwaysOnTop: true,
@@ -37,15 +38,36 @@ export function createOverlayWindow(display: Display, breakSeconds: number): Bro
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
+      webviewTag: true,
+      backgroundThrottling: false,
       preload: preloadPath,
     },
 
     // Transparente para overlay suave
     transparent: true,
 
-    // Sin foco automático para no bloquear input
+    // Foco permitido para interacción con la pill
     focusable: true, // Necesario para que tome foco pero no bloquee completamente
   });
+
+  // Asegurar que no entre en fullscreen y quede por encima de todo
+  try {
+    overlayWindow.setFullScreen(false);
+  } catch (error) {
+    logger.warn(`createOverlayWindow: setFullScreen(false) not supported (display ${display.id})`, error);
+  }
+  try {
+    overlayWindow.setAlwaysOnTop(true, 'screen-saver');
+  } catch (error) {
+    logger.warn(`createOverlayWindow: setAlwaysOnTop failed (display ${display.id})`, error);
+  }
+
+  // Evitar cierres accidentales por UI del SO
+  try {
+    overlayWindow.setClosable(false);
+  } catch (error) {
+    logger.warn('createOverlayWindow: setClosable(false) not supported', error);
+  }
 
   // Evitar navegación y nuevas ventanas
   overlayWindow.webContents.setWindowOpenHandler(() => {
@@ -60,23 +82,78 @@ export function createOverlayWindow(display: Display, breakSeconds: number): Bro
     logger.info(`Overlay console (display ${display.id}) [${level}]: ${message}`);
   });
 
+  // Eventos de proceso/render para diagnstico
+  overlayWindow.webContents.on('render-process-gone', (_event, details) => {
+    logger.error(`Overlay render-process-gone (display ${display.id}, winId ${overlayWindow.id}) reason=${(details as { reason?: string }).reason ?? 'unknown'}`);
+  });
+  overlayWindow.webContents.on('destroyed', () => {
+    logger.warn(`Overlay webContents destroyed (display ${display.id}, winId ${overlayWindow.id})`);
+  });
+  overlayWindow.on('unresponsive', () => {
+    logger.warn(`Overlay window unresponsive (display ${display.id}, winId ${overlayWindow.id})`);
+  });
+  overlayWindow.on('responsive', () => {
+    logger.info(`Overlay window responsive (display ${display.id}, winId ${overlayWindow.id})`);
+  });
+
+  // Trazas adicionales de ventana para diagnosticar
+  overlayWindow.on('focus', () => {
+    logger.info(`Overlay window focus (display ${display.id}, winId ${overlayWindow.id})`);
+  });
+  overlayWindow.on('blur', () => {
+    logger.info(`Overlay window blur (display ${display.id}, winId ${overlayWindow.id})`);
+  });
+  overlayWindow.on('minimize', () => {
+    logger.warn(`Overlay window minimize (display ${display.id}, winId ${overlayWindow.id})`);
+  });
+  overlayWindow.on('restore', () => {
+    logger.info(`Overlay window restore (display ${display.id}, winId ${overlayWindow.id})`);
+  });
+
+  // Bloquear teclas comunes de cierre
+  overlayWindow.webContents.on('before-input-event', (event, input) => {
+    const isCloseCombo =
+      (input.key?.toLowerCase?.() === 'escape') ||
+      (input.alt && (input.key?.toLowerCase?.() === 'f4')) ||
+      (input.control && (input.key?.toLowerCase?.() === 'w'));
+    if (isCloseCombo) {
+      logger.warn(`Overlay before-input-event blocked close combo on display ${display.id} (winId ${overlayWindow.id}) key=${input.key} alt=${!!input.alt} ctrl=${!!input.control}`);
+      event.preventDefault();
+    }
+  });
+
   // Cargar el HTML del overlay
   const htmlPath = path.join(__dirname, 'ui', 'index.html');
   logger.info(`Loading overlay HTML from: ${htmlPath}`);
-  overlayWindow.loadFile(htmlPath).catch(error => {
+  overlayWindow.loadFile(htmlPath, { query: { context: 'overlay' } }).catch(error => {
     logger.error('Failed to load overlay HTML', error);
   });
 
-  // Enviar datos del break cuando esté listo
-  overlayWindow.webContents.once('did-finish-load', () => {
-    logger.info(`OverlayManager: Sending overlay:init to window for display ${display.id} with breakSeconds: ${breakSeconds}`);
-    overlayWindow.webContents.send('overlay:init', { breakSeconds });
-  });
+  // overlay:init será enviado por OverlayManager cuando la ventana haya cargado
 
   // Mostrar la ventana cuando esté lista
   overlayWindow.once('ready-to-show', () => {
     overlayWindow.show();
     logger.info(`Overlay window shown for display ${display.id} - Window is visible: ${overlayWindow.isVisible()}`);
+  });
+
+  overlayWindow.on('show', () => {
+    logger.info(`Overlay window show (display ${display.id}, winId ${overlayWindow.id})`);
+  });
+  overlayWindow.on('hide', () => {
+    logger.warn(`Overlay window hide (display ${display.id}, winId ${overlayWindow.id})`);
+  });
+  overlayWindow.on('enter-full-screen', () => {
+    logger.warn(`Overlay window enter-full-screen (display ${display.id}, winId ${overlayWindow.id})`);
+  });
+  overlayWindow.on('leave-full-screen', () => {
+    logger.info(`Overlay window leave-full-screen (display ${display.id}, winId ${overlayWindow.id})`);
+  });
+  overlayWindow.on('maximize', () => {
+    logger.info(`Overlay window maximize (display ${display.id}, winId ${overlayWindow.id})`);
+  });
+  overlayWindow.on('unmaximize', () => {
+    logger.info(`Overlay window unmaximize (display ${display.id}, winId ${overlayWindow.id})`);
   });
 
   // Manejar errores

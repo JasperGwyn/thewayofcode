@@ -89,11 +89,9 @@ app.on('ready', async () => {
   }
 });
 
+// Do not quit the app when overlay windows close; keep tray running
 app.on('window-all-closed', () => {
-  // On macOS it is common for applications to stay active until explicitly quit
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  logger.info('All windows closed; keeping app alive (tray mode)');
 });
 
 app.on('before-quit', () => {

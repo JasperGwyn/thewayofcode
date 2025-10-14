@@ -1,56 +1,80 @@
 import { BrowserWindow, screen, ipcMain } from 'electron';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { logger } from '../log.js';
 import { createOverlayWindow } from './createOverlayWindow.js';
+import { pickRandomArticle, getFallbackArticle, type PickedArticle } from '../articles/ArticlePicker.js';
 
-/**
- * Gestiona las ventanas de overlay que se muestran durante los breaks.
- * Crea una ventana por cada monitor conectado.
- */
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+type OverlayInitUiPayload = {
+  breakSeconds: number;
+};
+
+type OverlayArticleLoadedUiPayload = {
+  url: string;
+};
+
+type OverlayUiMessage =
+  | { channel: 'overlay:init'; payload: OverlayInitUiPayload }
+  | { channel: 'overlay:article-loaded'; payload: OverlayArticleLoadedUiPayload };
+
+type OverlayState = {
+  window: BrowserWindow;
+  isUiReady: boolean;
+  pendingUiMessages: OverlayUiMessage[];
+  currentArticle: PickedArticle | null;
+  allowClose: boolean;
+};
+
 export class OverlayManager {
   private overlayWindows: BrowserWindow[] = [];
+  private overlayStates: Map<BrowserWindow, OverlayState> = new Map();
   private isActive: boolean = false;
+  private readonly overlayUiHtmlPath: string;
+  private readonly overlayUiPreloadPath: string;
 
   constructor() {
+    this.overlayUiHtmlPath = path.join(__dirname, 'ui', 'index.html');
+    this.overlayUiPreloadPath = path.join(__dirname, 'ui', 'preload.js');
     this.setupIpcListeners();
   }
 
-  /**
-   * Configura los listeners de IPC para eventos de break
-   */
   private setupIpcListeners(): void {
     logger.info('OverlayManager: Setting up IPC listeners');
 
-    // Escuchar evento break:start
     ipcMain.on('break:start', (_event, breakSeconds: number) => {
       logger.info(`OverlayManager: break:start received, duration: ${breakSeconds}s`);
       this.showOverlays(breakSeconds);
     });
 
-    // Escuchar evento break:end
     ipcMain.on('break:end', () => {
       logger.info('OverlayManager: break:end received');
       this.hideOverlays();
     });
 
-    // Escuchar logs desde los overlays
     ipcMain.on('overlay:log', (_event, message: string) => {
       logger.info(`Overlay: ${message}`);
     });
 
-    // Escuchar evento de cerrar break desde el overlay
-    ipcMain.on('overlay:close-break', () => {
-      logger.info('OverlayManager: overlay:close-break received - hiding overlays');
+    ipcMain.on('overlay:close-break', (_event, payload?: { source?: string }) => {
+      const srcWin = BrowserWindow.fromWebContents(_event.sender);
+      const srcId = srcWin ? srcWin.id : -1;
+      logger.info(`OverlayManager: overlay:close-break received from winId=${srcId} with payload=${JSON.stringify(payload)}`);
+      const source = payload?.source ?? 'unknown';
+      if (source !== 'pill') {
+        logger.warn(`OverlayManager: Ignoring close request from unexpected source: ${source}`);
+        return;
+      }
+      logger.info('OverlayManager: Valid close request from pill - hiding overlays');
       this.hideOverlays();
-      // Emitir break:end para que el scheduler sepa que terminó
+      // Notificar fin de break al resto de la app
       ipcMain.emit('break:end');
       logger.info('OverlayManager: break:end emitted');
     });
   }
 
-  /**
-   * Muestra los overlays en todos los monitores
-   */
-  public showOverlays(breakSeconds: number): void {
+  public async showOverlays(breakSeconds: number): Promise<void> {
     if (this.isActive) {
       logger.warn('OverlayManager: Overlays already active, skipping');
       return;
@@ -60,96 +84,162 @@ export class OverlayManager {
     logger.info('OverlayManager: Showing overlays on all displays');
 
     try {
-      // Obtener todos los displays conectados
+      let article: PickedArticle;
+      try {
+        article = await pickRandomArticle();
+        logger.info(`OverlayManager: Picked article ${article.id}: ${article.url}`);
+      } catch (error) {
+        logger.warn('OverlayManager: Failed to pick random article, using fallback', error);
+        article = getFallbackArticle();
+      }
+
       const displays = screen.getAllDisplays();
 
-      // Crear una ventana overlay por cada display
       for (const display of displays) {
         const overlayWindow = createOverlayWindow(display, breakSeconds);
         this.overlayWindows.push(overlayWindow);
+        logger.info(`OverlayManager: created overlay window winId=${overlayWindow.id} for display=${display.id}`);
 
-        // Manejar cierre de ventana individual
+        const overlayState: OverlayState = {
+          window: overlayWindow,
+          isUiReady: false,
+          pendingUiMessages: [],
+          currentArticle: article,
+          allowClose: false,
+        };
+        this.overlayStates.set(overlayWindow, overlayState);
+
+        overlayWindow.webContents.once('did-finish-load', () => {
+          logger.info(`Overlay window did-finish-load (display ${display.id}, winId ${overlayWindow.id})`);
+          this.markUiReady(overlayState);
+        });
+
+        // Enviar datos al renderer (se encolarán hasta que cargue)
+        this.sendMessageToOverlayUi(overlayState, { channel: 'overlay:init', payload: { breakSeconds } });
+        this.sendMessageToOverlayUi(overlayState, {
+          channel: 'overlay:article-loaded',
+          payload: { url: article.url },
+        });
+
+        overlayWindow.on('close', (event) => {
+          // Block unexpected window closes (e.g., accidental OS gestures)
+          if (!overlayState.allowClose) {
+            event.preventDefault();
+            const displayId = this.getDisplayIdForWindow(overlayWindow);
+            logger.warn(`OverlayManager: Prevented unintended overlay window close (winId=${overlayWindow.id}, display=${displayId ?? 'unknown'})`);
+          }
+        });
+
         overlayWindow.on('closed', () => {
-          logger.info(`OverlayManager: Overlay window closed for display ${display.id}`);
-          // Nota: La limpieza de la lista se hace en hideOverlays() para evitar race conditions
+          const displayId = this.getDisplayIdForWindow(overlayWindow);
+          logger.info(`OverlayManager: Overlay window closed (winId=${overlayWindow.id}, display=${displayId ?? 'unknown'})`);
+          this.cleanupOverlayState(overlayWindow);
         });
       }
-
-      logger.info(`OverlayManager: Created ${this.overlayWindows.length} overlay windows`);
     } catch (error) {
-      logger.error('OverlayManager: Failed to create overlay windows', error);
-      this.isActive = false;
+      logger.error('OverlayManager: Failed to show overlays', error);
+      this.hideOverlays();
     }
   }
 
-  /**
-   * Oculta y destruye todos los overlays
-   */
   public hideOverlays(): void {
-    logger.info(`OverlayManager: hideOverlays called - isActive: ${this.isActive}, overlayWindows: ${this.overlayWindows.length}`);
+    logger.info('OverlayManager: Hiding overlays');
+    this.isActive = false;
 
-    // Cerrar TODAS las ventanas que tenemos registradas
     for (const window of this.overlayWindows) {
       try {
         if (!window.isDestroyed()) {
-          const bounds = window.getBounds();
-          logger.info(`OverlayManager: Closing registered overlay window at ${bounds.x},${bounds.y}`);
+          const state = this.overlayStates.get(window);
+          if (state) {
+            logger.info(`OverlayManager: Preparing to close overlay winId=${window.id} (allowClose true)`);
+            state.allowClose = true;
+          }
+          try {
+            window.setClosable(true);
+          } catch (error) {
+            logger.warn('OverlayManager: setClosable(true) not supported', error);
+          }
           window.close();
-        } else {
-          logger.info('OverlayManager: Window already destroyed');
         }
       } catch (error) {
         logger.error('OverlayManager: Error closing overlay window', error);
       }
     }
 
-    // También buscar cualquier ventana overlay que pueda haber quedado
-    const allWindows = BrowserWindow.getAllWindows();
-    for (const window of allWindows) {
-      try {
-        if (!window.isDestroyed() && window.isAlwaysOnTop()) {
-          const bounds = window.getBounds();
-          // Si es una ventana grande y always-on-top, probablemente es un overlay
-          if (bounds.width > 1000 && bounds.height > 500) {
-            logger.info(`OverlayManager: Closing additional overlay window at ${bounds.x},${bounds.y}`);
-            window.close();
-          }
-        }
-      } catch (error) {
-        // Ignorar errores al verificar ventanas
-      }
-    }
-
-    // Limpiar el estado local
     this.overlayWindows = [];
-    this.isActive = false;
-    logger.info('OverlayManager: All overlays closed and state reset');
+
+    for (const window of Array.from(this.overlayStates.keys())) {
+      this.cleanupOverlayState(window);
+    }
   }
 
-  /**
-   * Verifica si hay overlays activos
-   */
-  public isOverlayActive(): boolean {
-    return this.isActive;
-  }
-
-  /**
-   * Obtiene el número de ventanas overlay activas
-   */
   public getActiveOverlayCount(): number {
     return this.overlayWindows.length;
   }
 
-  /**
-   * Destruye el manager y limpia todos los recursos
-   */
+  private cleanupOverlayState(window: BrowserWindow): void {
+    if (this.overlayStates.has(window)) {
+      this.overlayStates.delete(window);
+    }
+  }
+
   public destroy(): void {
     logger.info('OverlayManager: Destroying manager');
     this.hideOverlays();
 
-    // Remover listeners de IPC
     ipcMain.removeAllListeners('break:start');
     ipcMain.removeAllListeners('break:end');
     ipcMain.removeAllListeners('overlay:close-break');
+  }
+
+  private markUiReady(state: OverlayState): void {
+    state.isUiReady = true;
+    logger.info(`OverlayManager: UI marked ready for winId=${state.window.id} - flushing ${state.pendingUiMessages.length} message(s)`);
+    this.flushPendingMessages(state);
+  }
+
+  private flushPendingMessages(state: OverlayState): void {
+    while (state.pendingUiMessages.length > 0) {
+      const message = state.pendingUiMessages.shift();
+      if (!message) {
+        continue;
+      }
+      try {
+        if (!state.window.isDestroyed()) {
+          logger.info(`OverlayManager: Sending queued message '${message.channel}' to winId=${state.window.id}`);
+          state.window.webContents.send(message.channel, message.payload);
+        }
+      } catch (error) {
+        logger.error('OverlayManager: Failed to flush message to overlay UI', error);
+      }
+    }
+  }
+
+  private sendMessageToOverlayUi(state: OverlayState, message: OverlayUiMessage): void {
+    if (!state.isUiReady) {
+      logger.info(`OverlayManager: Queueing message '${message.channel}' for winId=${state.window.id}`);
+      state.pendingUiMessages.push(message);
+      return;
+    }
+
+    try {
+      if (!state.window.isDestroyed()) {
+        logger.info(`OverlayManager: Sending message '${message.channel}' to winId=${state.window.id}`);
+        state.window.webContents.send(message.channel, message.payload);
+      }
+    } catch (error) {
+      logger.error('OverlayManager: Failed to send message to overlay UI', error);
+    }
+  }
+
+  private getDisplayIdForWindow(window: BrowserWindow): number | null {
+    try {
+      const bounds = window.getBounds();
+      const display = screen.getDisplayMatching(bounds);
+      return display?.id ?? null;
+    } catch (error) {
+      logger.warn('OverlayManager: Failed to map window to display', error);
+      return null;
+    }
   }
 }

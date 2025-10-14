@@ -63,6 +63,14 @@ export function setupIpcHandlers(
 
   ipcMain.on('break:end', () => {
     logger.info('IPC: break:end event received from renderer');
+    // User closed break early from overlay; reset scheduler interval from now
+    try {
+      scheduler.stop();
+      scheduler.start();
+      logger.info('IPC: Scheduler reset after break:end (user close)');
+    } catch (error) {
+      logger.error('IPC: Failed to reset scheduler after break:end', error);
+    }
   });
 }
 
