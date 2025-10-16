@@ -11,6 +11,7 @@ win:
   target: nsis
   sign: false
   verifyUpdateCodeSignature: false
+  icon: assets/icons/thewayofcode.ico
 
 nsis:
   oneClick: false
