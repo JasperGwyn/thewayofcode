@@ -125,13 +125,13 @@ export class TrayManager {
     // Compute a human-readable remaining time label
     const remainingLabel = this.getRemainingTimeLabel(status, currentSettings);
 
-    const contextMenu = Menu.buildFromTemplate([
+    const menuTemplate: Electron.MenuItemConstructorOptions[] = [
       {
         // Read-only status line with the countdown
         label: remainingLabel,
         enabled: false,
       },
-      { type: 'separator' },
+      { type: 'separator' as const },
       {
         label: pauseLabel,
         click: () => this.handlePauseToggle(),
@@ -144,8 +144,20 @@ export class TrayManager {
         label: 'Settings...',
         click: () => this.showSettings(),
       },
-      // Removed Force Break Now option to simplify tray menu
-      { type: 'separator' },
+    ];
+
+    // Add Force Overlay button only in development mode
+    if (process.env.NODE_ENV === 'development') {
+      menuTemplate.push(
+        {
+          label: '🔧 Force Overlay (5s)',
+          click: () => this.handleForceOverlay(),
+        }
+      );
+    }
+
+    menuTemplate.push(
+      { type: 'separator' as const },
       {
         label: 'Quit',
         click: () => {
@@ -153,7 +165,9 @@ export class TrayManager {
           app.quit();
         },
       },
-    ]);
+    );
+
+    const contextMenu = Menu.buildFromTemplate(menuTemplate);
 
     this.tray.setContextMenu(contextMenu);
   }
@@ -238,6 +252,17 @@ export class TrayManager {
       logger.info('Settings window opened');
     } catch (error) {
       logger.error('Failed to show settings', error);
+    }
+  }
+
+  private handleForceOverlay(): void {
+    logger.info('Force overlay requested (5 seconds)');
+    try {
+      // Force overlay with 5 seconds duration
+      this.overlayManager.showOverlays(5);
+      logger.info('Force overlay activated for 5 seconds');
+    } catch (error) {
+      logger.error('Failed to activate force overlay', error);
     }
   }
 

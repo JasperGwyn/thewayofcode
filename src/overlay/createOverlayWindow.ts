@@ -16,17 +16,17 @@ export function createOverlayWindow(display: Display, breakSeconds: number): Bro
   logger.info(`Creating overlay window for display: ${display.id} at ${bounds.x},${bounds.y} ${bounds.width}x${bounds.height}, breakSeconds: ${breakSeconds}`);
 
   const overlayWindow = new BrowserWindow({
-    // Posición y tamaño del display
+    // Posicionar en la esquina del display y dimensionar para cubrir toda la pantalla
     x: bounds.x,
     y: bounds.y,
     width: bounds.width,
     height: bounds.height,
 
-    // Ocupa toda la pantalla sin usar fullscreen del SO
-    fullscreen: false,
     frame: false,
     resizable: false,
-    fullscreenable: false,
+    fullscreenable: true,
+    autoHideMenuBar: true,
+    hasShadow: false,
 
     // Siempre encima y no en taskbar
     alwaysOnTop: true,
@@ -44,18 +44,22 @@ export function createOverlayWindow(display: Display, breakSeconds: number): Bro
       preload: preloadPath,
     },
 
-    // Transparente para overlay suave
-    transparent: true,
+    // Importante: en Windows, las ventanas transparentes no cubren la taskbar en muchos casos
+    // Usar fondo opaco para asegurar cobertura total en fullscreen
+    transparent: false,
+    backgroundColor: '#000000',
 
     // Foco permitido para interacción con la pill
     focusable: true, // Necesario para que tome foco pero no bloquee completamente
   });
 
-  // Asegurar que no entre en fullscreen y quede por encima de todo
+  // Asegurar fullscreen real para cubrir taskbar y todo el display
   try {
-    overlayWindow.setFullScreen(false);
+    // Ajustar bounds explícitamente antes de entrar en fullscreen ayuda a respetar el display destino
+    overlayWindow.setBounds({ x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height });
+    overlayWindow.setFullScreen(true);
   } catch (error) {
-    logger.warn(`createOverlayWindow: setFullScreen(false) not supported (display ${display.id})`, error);
+    logger.warn(`createOverlayWindow: setFullScreen(true) failed or not supported (display ${display.id})`, error);
   }
   try {
     overlayWindow.setAlwaysOnTop(true, 'screen-saver');
