@@ -5,6 +5,7 @@ type OverlayInitMessage = {
 
 type ArticleLoadedMessage = {
   url: string;
+  articleId: number;
 };
 
 type ExposeInMainWorldOverlay = (_key: string, _api: unknown) => void;
@@ -17,9 +18,12 @@ interface ElectronIpcRendererOverlay {
   send(_channel: 'overlay:log', _message: string): void;
   send(_channel: 'overlay:close-break', _payload: { source: 'pill' | 'timer' }): void;
   send(_channel: 'overlay:ui-ready'): void;
+  send(_channel: 'overlay:tts-speak', _payload: { text?: string; lang?: string; poemChapter?: number }): void;
+  send(_channel: 'overlay:tts-stop'): void;
   on(_channel: 'overlay:init', _listener: (_event: unknown, _data: OverlayInitMessage) => void): void;
   on(_channel: 'overlay:article-loaded', _listener: (_event: unknown, _data: ArticleLoadedMessage) => void): void;
   on(_channel: 'overlay:show-now', _listener: (_event: unknown) => void): void;
+  on(_channel: 'overlay:keyboard-tts', _listener: (_event: unknown, _data: { action: 'start' | 'stop' | 'toggle'; lang?: string; poemChapter?: number }) => void): void;
 }
 
 const overlayElectron = require('electron') as {
@@ -58,6 +62,17 @@ overlayContextBridge.exposeInMainWorld('electron', {
       overlayIpcRenderer.on('overlay:show-now', () => {
         _listener();
       });
+    },
+    onKeyboardTts(_listener: (_payload: { action: 'start' | 'stop' | 'toggle'; lang?: string; poemChapter?: number }) => void): void {
+      overlayIpcRenderer.on('overlay:keyboard-tts', (_event, data) => {
+        _listener(data);
+      });
+    },
+    ttsSpeak(payload: { text?: string; lang?: string; poemChapter?: number }): void {
+      overlayIpcRenderer.send('overlay:tts-speak', payload);
+    },
+    ttsStop(): void {
+      overlayIpcRenderer.send('overlay:tts-stop');
     },
   },
 });

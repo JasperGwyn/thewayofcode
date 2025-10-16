@@ -124,10 +124,35 @@ export function createOverlayWindow(display: Display, breakSeconds: number): Bro
 
   // Bloquear teclas comunes de cierre
   overlayWindow.webContents.on('before-input-event', (event, input) => {
+    const key = input.key?.toLowerCase?.() ?? '';
+
+    if (input.type === 'keyDown' && !input.control && !input.alt && !input.meta) {
+      if (key === 't' || key === 's' || key === 'p') {
+        const action = key === 't' ? 'start' : key === 's' ? 'stop' : 'toggle';
+        logger.info(`Overlay before-input-event captured TTS key='${key}' action='${action}' (display ${display.id}, winId ${overlayWindow.id})`);
+        event.preventDefault();
+
+        const mainFrame = overlayWindow.webContents.mainFrame;
+        const urlObj = new URL(mainFrame.url ?? '');
+        const hash = urlObj.hash?.replace(/^#/, '') ?? '';
+        const poemNumber = Number.parseInt(hash, 10);
+        const resolvedPoem = Number.isFinite(poemNumber) ? poemNumber : undefined;
+
+        logger.info(`TTS_DEBUG hash=${hash || 'none'} resolvedPoem=${resolvedPoem ?? 'auto'}`);
+
+        overlayWindow.webContents.send('overlay:keyboard-tts', {
+          action,
+          lang: 'en',
+          poemChapter: resolvedPoem,
+        });
+        return;
+      }
+    }
+
     const isCloseCombo =
-      (input.key?.toLowerCase?.() === 'escape') ||
-      (input.alt && (input.key?.toLowerCase?.() === 'f4')) ||
-      (input.control && (input.key?.toLowerCase?.() === 'w'));
+      (key === 'escape') ||
+      (input.alt && key === 'f4') ||
+      (input.control && key === 'w');
     if (isCloseCombo) {
       logger.warn(`Overlay before-input-event blocked close combo on display ${display.id} (winId ${overlayWindow.id}) key=${input.key} alt=${!!input.alt} ctrl=${!!input.control}`);
       event.preventDefault();

@@ -58,6 +58,19 @@ export class SoundManager {
               return false;
             }
           };
+          window.stopPlayback = () => {
+            try {
+              if (!a) { return false; }
+              if (a.pause) {
+                a.pause();
+              }
+              a.currentTime = 0;
+              a.src = '';
+              return true;
+            } catch {
+              return false;
+            }
+          };
           window.fallbackBeep = (durationMs = 300, freq = 880) => {
             try {
               const AC = window.AudioContext || window.webkitAudioContext;
@@ -120,6 +133,41 @@ export class SoundManager {
       }
     } catch (error) {
       logger.error('Sound: failed to play end', error);
+    }
+  }
+
+  async playAudioBuffer(buffer: Buffer, mimeType: string = 'audio/mp3'): Promise<void> {
+    try {
+      const dataUrl = `data:${mimeType};base64,${buffer.toString('base64')}`;
+      await this.ensureWindow();
+      if (this.audioWindow && !this.audioWindow.isDestroyed()) {
+        const ok: boolean = await this.audioWindow.webContents.executeJavaScript(
+          `window.play(${JSON.stringify(dataUrl)})`,
+          true
+        );
+        if (!ok) {
+          logger.warn('Sound: custom playback failed, using fallback beep');
+          await this.audioWindow.webContents.executeJavaScript(`window.fallbackBeep()`, true);
+        } else {
+          logger.info('TTS_DEBUG audioWindow playback started');
+        }
+      }
+    } catch (error) {
+      logger.error('Sound: failed to play custom audio buffer', error);
+    }
+  }
+
+  async stopAudio(): Promise<void> {
+    try {
+      await this.ensureWindow();
+      if (this.audioWindow && !this.audioWindow.isDestroyed()) {
+        const ok: boolean = await this.audioWindow.webContents.executeJavaScript('window.stopPlayback && window.stopPlayback()', true);
+        if (!ok) {
+          logger.warn('Sound: stopPlayback returned false');
+        }
+      }
+    } catch (error) {
+      logger.warn('Sound: failed to stop playback', error);
     }
   }
 

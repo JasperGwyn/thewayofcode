@@ -5,6 +5,7 @@ type OverlayInitPayload = {
 
 type ArticleLoadedPayload = {
   url: string;
+  articleId: number;
 };
 
 type OverlayApi = {
@@ -12,6 +13,9 @@ type OverlayApi = {
   requestCloseBreak(): void;
   requestCloseBreakByTimer(): void;
   notifyReady(): void;
+  onKeyboardTts(_handler: (_payload: { action: 'start' | 'stop' | 'toggle'; lang?: string; poemChapter?: number }) => void): void;
+  ttsSpeak(_payload: { text: string; lang?: string; poemChapter?: number }): void;
+  ttsStop(): void;
   onInit(_handler: (_payload: OverlayInitPayload) => void): void;
   onArticleLoaded(_handler: (_payload: ArticleLoadedPayload) => void): void;
   onShowNow(_handler: () => void): void;
@@ -26,6 +30,9 @@ interface OverlayWindow extends Window {
 const overlayWindow = window as OverlayWindow;
 const urlParams = new URLSearchParams(window.location.search);
 const overlayContext = urlParams.get('context') ?? 'overlay';
+const poemParam = urlParams.get('poem');
+const poemChapterFromUrl = poemParam ? Number.parseInt(poemParam, 10) : undefined;
+const overlayChapterNumber = Number.isFinite(poemChapterFromUrl ?? NaN) ? (poemChapterFromUrl as number) : undefined;
 
 function getOverlayApi(): OverlayApi {
   const api = overlayWindow.electron?.overlay;
@@ -45,6 +52,9 @@ function getBoundFunctions(): {
   onInit(_handler: (_payload: OverlayInitPayload) => void): void;
   onArticleLoaded(_handler: (_payload: ArticleLoadedPayload) => void): void;
   onShowNow(_handler: () => void): void;
+  onKeyboardTts(_handler: (_payload: { action: 'start' | 'stop' | 'toggle'; lang?: string; poemChapter?: number }) => void): void;
+  ttsSpeak(_payload: { text: string; lang?: string; poemChapter?: number }): void;
+  ttsStop(): void;
 } {
   const api = getOverlayApi();
 
@@ -70,10 +80,30 @@ function getBoundFunctions(): {
     onShowNow(handler: () => void): void {
       api.onShowNow(handler);
     },
+  onKeyboardTts(handler: (_payload: { action: 'start' | 'stop' | 'toggle'; lang?: string; poemChapter?: number }) => void): void {
+      api.onKeyboardTts(handler);
+    },
+    ttsSpeak(payload: { text: string; lang?: string; poemChapter?: number }): void {
+      api.ttsSpeak(payload);
+    },
+    ttsStop(): void {
+      api.ttsStop();
+    },
   };
 }
 
-const { sendLog, requestCloseBreak, requestCloseBreakByTimer, notifyReady, onInit, onArticleLoaded, onShowNow } = getBoundFunctions();
+const {
+  sendLog,
+  requestCloseBreak,
+  requestCloseBreakByTimer,
+  notifyReady,
+  onInit,
+  onArticleLoaded,
+  onShowNow,
+  onKeyboardTts,
+  ttsSpeak: overlayTtsSpeak,
+  ttsStop: overlayTtsStop,
+} = getBoundFunctions();
 
 // Log inicial para confirmar que el script se carga
 const overlayPosition = { x: window.screenX, y: window.screenY };
@@ -88,6 +118,7 @@ sendLog('Overlay JavaScript loaded and executing');
 const minutesElement = document.getElementById('minutes') as HTMLSpanElement | null;
 const secondsElement = document.getElementById('seconds') as HTMLSpanElement | null;
 const timerPill = document.getElementById('timer-pill') as HTMLDivElement | null;
+const ttsToggleButton = document.getElementById('tts-toggle') as HTMLButtonElement | null;
 
 // Debug: verificar que los elementos se encontraron
 sendLog(`DOM elements found - minutes: ${!!minutesElement}, seconds: ${!!secondsElement}, timerPill: ${!!timerPill}`);
@@ -98,6 +129,8 @@ let initReceived = false;
 let webviewLoaded = false;
 let countdownStarted = false;
 let countdownInterval: NodeJS.Timeout | null = null;
+let currentArticleId: number | undefined;
+let isTtsActive = false;
 
 /**
  * Formatea un número como string de dos dígitos
@@ -198,11 +231,17 @@ function initializeOverlay(): void {
     remainingSeconds = data.breakSeconds;
     initReceived = true;
     maybeNotifyReady();
+
+    // 🔥 AUTO-TTS: Si hay un poema desde URL, iniciar TTS automáticamente
+    if (overlayChapterNumber !== undefined) {
+      sendLog(`AUTO-TTS: URL poem detected (chapter ${overlayChapterNumber}), starting TTS...`);
+      void ttsStart('en', overlayChapterNumber);
+    }
   });
 
   onArticleLoaded((data) => {
     sendLog(`Received overlay:article-loaded event: ${JSON.stringify(data)}`);
-    loadArticleUrl(data.url);
+    loadArticleUrl(data);
   });
 
   onShowNow(() => {
@@ -229,6 +268,19 @@ if (timerPill) {
   sendLog('ERROR: Timer pill not found!');
 }
 
+if (ttsToggleButton) {
+  ttsToggleButton.addEventListener('click', () => {
+    const shouldStart = !isTtsActive;
+    if (shouldStart) {
+      void ttsStart('en');
+    } else {
+      ttsStop();
+    }
+  });
+} else {
+  sendLog('ERROR: TTS toggle button not found!');
+}
+
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', initializeOverlay);
 sendLog('DOMContentLoaded listener added');
@@ -236,16 +288,32 @@ sendLog('DOMContentLoaded listener added');
 // Nota: evitamos listeners globales de clic para no interferir
 
 // Manejo de carga de artículo en el webview
-function loadArticleUrl(url: string): void {
+function loadArticleUrl(payload: ArticleLoadedPayload): void {
   if (!articleView) {
     sendLog('ERROR: Webview #article-view not found');
     return;
   }
+  const { url, articleId } = payload;
+  currentArticleId = articleId;
+  setTtsActiveState(false);
+
   try {
     sendLog(`Loading article URL into webview: ${url}`);
     articleView.loadURL(url);
+
+    // 🔥 AUTO-TTS: Iniciar TTS automáticamente apenas se sabe el número de poema
+    sendLog(`AUTO-TTS: Iniciando reproducción automática del poema ${articleId}`);
+    void ttsStart('en', articleId);
   } catch (error) {
     sendLog(`ERROR: Failed to load URL into webview: ${(error as Error).message}`);
+  }
+}
+
+function setTtsActiveState(isActive: boolean): void {
+  isTtsActive = isActive;
+  if (ttsToggleButton) {
+    ttsToggleButton.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    ttsToggleButton.title = isActive ? 'Detener lectura (S)' : 'Leer poema (T)';
   }
 }
 
@@ -284,3 +352,78 @@ if (articleView) {
     sendLog('webview destroyed');
   });
 }
+
+async function getArticleText(): Promise<string> {
+  if (!articleView) {
+    sendLog('TTS: webview no encontrado');
+    return '';
+  }
+  try {
+    const text = await articleView.executeJavaScript(
+      `(() => {
+        const el = document.querySelector('article,[role="article"]') || document.body;
+        return el ? el.innerText : '';
+      })()`,
+      true
+    );
+    return (String(text ?? '')).trim();
+  } catch (_error) {
+    sendLog('TTS: error extrayendo texto del artículo');
+    return '';
+  }
+}
+
+async function ttsStart(langHint: 'en' | 'es' | 'auto' = 'auto', poemChapterOverride?: number): Promise<void> {
+  const lang = langHint === 'en' ? 'en-US' : (langHint === 'es' ? 'es-ES' : 'en-US');
+  const payload: { text: string; lang: string; poemChapter?: number } = {
+    text: '',
+    lang,
+  };
+  const chapterToUse = poemChapterOverride ?? overlayChapterNumber ?? currentArticleId;
+  if (chapterToUse !== undefined) {
+    payload.poemChapter = chapterToUse;
+  }
+  overlayTtsSpeak(payload);
+  setTtsActiveState(true);
+  sendLog(`TTS(Google): solicitado speak lang=${lang} capítulo=${chapterToUse ?? 'default'}`);
+}
+
+function ttsStop(): void {
+  overlayTtsStop();
+  setTtsActiveState(false);
+  sendLog('TTS(Google): solicitado stop');
+}
+
+function ttsTogglePause(): void {
+  // Pausa/reanudar no soportado vía SAPI simple; re-disparar no es trivial.
+  // Como alternativa rápida: si se quería pausar, usamos stop; si reanudar, volver a start.
+  sendLog('TTS(Google): toggle -> stop');
+  ttsStop();
+}
+
+// Atajos: T = leer (en inglés), P = pausar/reanudar, S = parar
+document.addEventListener('keydown', (e: KeyboardEvent) => {
+  if (e.repeat) return;
+  const key = e.key.toLowerCase();
+  if (key === 't') {
+    void ttsStart('en');
+  } else if (key === 'p') {
+    ttsTogglePause();
+  } else if (key === 's') {
+    ttsStop();
+  }
+});
+
+onKeyboardTts((payload: { action: 'start' | 'stop' | 'toggle'; lang?: string; poemChapter?: number }) => {
+  const action = payload.action;
+  const lang = payload.lang === 'es' ? 'es' : 'en';
+  const poemChapterOverride = payload.poemChapter ?? currentArticleId;
+  if (action === 'start') {
+    void ttsStart(lang === 'es' ? 'es' : 'en', poemChapterOverride);
+  } else if (action === 'stop') {
+    ttsStop();
+  } else if (action === 'toggle') {
+    ttsTogglePause();
+  }
+});
+

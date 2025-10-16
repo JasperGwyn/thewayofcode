@@ -150,7 +150,7 @@ export class TrayManager {
     if (process.env.NODE_ENV === 'development') {
       menuTemplate.push(
         {
-          label: '🔧 Force Overlay (5s)',
+          label: '🔧 Force Overlay (30s)',
           click: () => this.handleForceOverlay(),
         }
       );
@@ -256,11 +256,11 @@ export class TrayManager {
   }
 
   private handleForceOverlay(): void {
-    logger.info('Force overlay requested (5 seconds)');
+    logger.info('Force overlay requested (30 seconds)');
     try {
-      // Force overlay with 5 seconds duration
-      this.overlayManager.showOverlays(5);
-      logger.info('Force overlay activated for 5 seconds');
+      // Force overlay with 30 seconds duration
+      this.overlayManager.showOverlays(30);
+      logger.info('Force overlay activated for 30 seconds');
     } catch (error) {
       logger.error('Failed to activate force overlay', error);
     }

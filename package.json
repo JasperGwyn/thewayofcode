@@ -1,6 +1,6 @@
 {
   "name": "electron-break-timer",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Electron app that runs in system tray and triggers breaks every 30 minutes",
   "main": "dist/main.js",
   "type": "module",
@@ -12,7 +12,12 @@
     "zip": "powershell \"Compress-Archive -Path 'dist-installer\\The Way of Code - Break Timer-win32-x64' -DestinationPath ('dist-installer\\The Way of Code - Break Timer v' + $env:npm_package_version + '.zip') -Force\"",
     "dist": "npm run package && npm run zip",
     "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix"
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "tts:test:winrt": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/test-tts-winrt.ps1",
+    "tts:test:winrt:wp": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/test-tts-winrt.ps1",
+    "tts:test:sapi": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/test-tts-sapi.ps1",
+    "tts:test:google": "node scripts/test-tts-google.js",
+    "tts:test:google:free": "node scripts/test-tts-google-free.js"
   },
   "build": {
     "appId": "com.thewayofcode.break-timer",
@@ -49,5 +54,8 @@
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@google-cloud/text-to-speech": "^6.3.1"
   }
 }

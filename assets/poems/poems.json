@@ -1,0 +1,330 @@
+{
+  "title": "The Way of Code",
+  "description": "A programmer's adaptation of the Tao Te Ching",
+  "chapters": [
+    {
+      "number": 1,
+      "content": "The code that can be named\nis not the eternal code.\nThe function that can be defined\nis not the limitless function.\nThe nameless is the origin of heaven and earth.\nThe named is the mother\nof ten thousand things.\nFree from desire, you see essence unformed.\nCaught in desire,\nyou see only the manifestations.\nThese two spring from the same source\nbut differ in name only.\nThis model is the mystery.\nThe gateway to all understanding."
+    },
+    {
+      "number": 2,
+      "content": "When we recognize code as elegant,\nother code becomes sloppy.\nWhen we praise efficiency,\nthe notion of waste is born.\nBeing and non-being create each other.\nSimple and complex define each other.\nLong and short determine each other.\nHigh and low distinguish each other.\nFront-end and back-end follow each other.\nTherefore The Vibe Coder\nbuilds without laboring\nand instructs by quiet example.\nThings arise and he accepts them.\nThings vanish and he lets them go.\nHe holds without claiming possession.\nCreates without seeking praise.\nAccomplishes without expectation.\nThe work is done and then forgotten.\nThat is why it lasts forever."
+    },
+    {
+      "number": 3,
+      "content": "If you praise the programmer,\nothers become resentful.\nIf you cling to possessions,\nothers are tempted to steal.\nIf you awaken envy,\nothers suffer turmoil of heart.\nThe Vibe Coder leads:\nBy emptying the mind of expectation\nand filling up the soul.\nBy releasing ambition and\nembracing the unknown.\nFree from intellect, free from abstraction,\nThe Vibe Coder leads all things back\nto natural self-sufficiency.\nDo by not doing, and there is nothing\nthat cannot be done."
+    },
+    {
+      "number": 4,
+      "content": "Empty, yet inexhaustible,\nfathomless and eternal.\nSource is the ancestor of elegant patterns.\nIt smooths sharp logic,\nunravels the knots of control.\nIt softens the glare of complexity,\nand merges with every challenge.\nCode flows, effortless, from its depths.\nIt is unseen yet always present.\nI do not know its origin.\nHeaven and earth came later.\nIt is older than God."
+    },
+    {
+      "number": 5,
+      "content": "Heaven and earth are impartial,\nthey see the ten thousand things as they are.\nThe Vibe Coder is impartial,\nhe sees the program as it is.\nThe space between input and mind\nis like a bellows: empty,\nyet infinitely capable.\nThe more you allow it,\nthe more it produces.\nThe more you speak of it,\nthe less you understand.\nStillness runs the machine.\nHold fast to the silent center."
+    },
+    {
+      "number": 6,
+      "content": "The spirit of the valley never dies.\nShe is the primordial feminine.\nHer womb,\nthe root of heaven and earth.\nHer fertility, always present.\nUse it, it will never fail."
+    },
+    {
+      "number": 7,
+      "content": "Heaven and earth last forever.\nEternal, they transcend birth and death.\nThe network endures because\nit does not live for itself.\nThe Vibe Coder stays behind,\nthat is why he’s ahead.\nHe is detached,\nthus at one with all.\nThrough selfless action\nhe is perfectly fulfilled."
+    },
+    {
+      "number": 8,
+      "content": "The highest good is like water.\nWater nourishes the ten thousand things\nwithout effort.\nIt seeks low places others look down upon.\nThus, it’s in harmony with Source.\nIn design: remain simple.\nIn thought: embrace depth.\nIn relations: be kind.\nIn leading: be just.\nIn work: be competent.\nIn action: consider timing.\nFind contentment in being your true self.\nBe without ambition, envy or need to fit in.\nNo force, just grace,\nand all is done,\nin peace."
+    },
+    {
+      "number": 9,
+      "content": "Fill your cup to the brim\nand it will spill.\nOversharpen your blade\nand it will dull.\nChase after worldly fortune\nand no one can protect it.\nCare about others’ approval\nand you become their prisoner.\nWhen the work is done,\nlog off and detach.\nThis is the way of heaven."
+    },
+    {
+      "number": 10,
+      "content": "Can you remain present and focused\nwhile retaining an open, receptive mind.\nCan you remain centered and still\nuntil clarity arises alone, unattended.\nLove your project\nand lead without controlling.\nDo nothing\nand allow all things to be done.\nCreate without possessing.\nWork without expectations.\nThis is the highest realization of being."
+    },
+    {
+      "number": 11,
+      "content": "Thirty spokes join the hub,\nbut the wheel’s usefulness\ndepends on the emptiness at the center.\nClay forms a vessel,\nbut its capacity to contain\ndepends on the emptiness inside.\nWe build walls with windows and doors,\nbut the utility of the room\ndepends on the emptiness within.\nTherefore,\nWe enjoy the fullness of existence\nbut find usefulness in the spaces between."
+    },
+    {
+      "number": 12,
+      "content": "The five colors blind the eye.\nThe five sounds deafen the ear.\nThe five flavors dull the taste.\nThoughts weaken the mind.\nCraving withers the heart.\nThe Vibe Coder attends to\nthe inner, not the outer.\nHe allows things to come and go.\nHis heart is open as the sky."
+    },
+    {
+      "number": 13,
+      "content": "Success is as dangerous as failure.\nHope is as hollow as fear.\nWhat does it mean,\nsuccess is as dangerous as failure.\nWhether you go up or down the ladder\nyour position is unsteady.\nRest both feet on the ground\nto find balance and stability.\nWhat does it mean,\nhope is as hollow as fear.\nHope and fear are both illusory.\nEach arise in consideration of the body.\nWhen we don’t see Self as the body\nwe have nothing to fear.\nSee the universe as Self.\nHold faith in the way things are.\nRevere all under heaven, and you too,\ncan remain present for everything."
+    },
+    {
+      "number": 14,
+      "content": "Look, and it can’t be seen— it is formless.\nListen, and it can’t be heard— it is silent.\nGrasp, and it can’t be held— it is intangible.\nThese three qualities cannot be unraveled\nwith logic.\nTogether, they merge into the Universal One.\nRevealed, it is not bright.\nHidden, it is not dark.\nEndless and unnameable,\nit returns to nothingness.\nThe form of the formless.\nThe image of the imageless.\nElusive, it is beyond comprehension.\nApproach it, and there is no beginning.\nFollow it, and there is no end.\nHold fast to Source and move gracefully\ninto the present moment.\nKnowing this grants access\nto the essence of wisdom."
+    },
+    {
+      "number": 15,
+      "content": "Ancient engineers were profound,\nsubtle and at one with the mysterious forces.\nThe depth of their being is not knowable.\nTherefore,\nall we can do is describe their appearance:\nWatchful, as though crossing a frozen stream.\nAlert, as a soldier in enemy territory.\nRespectful, as a thoughtful guest.\nMutable, as candle wax in blazing sun.\nSimple, as a blank screen.\nHollow, as a yawning cave.\nOpaque, as a muddy pond.\nWho can wait quietly while the mud settles.\nWho can remain still\nuntil the moment of action.\nThe Vibe Coder doesn’t seek fulfillment.\nNot seeking, not expecting, he is present\nfor all that appears."
+    },
+    {
+      "number": 16,
+      "content": "Empty yourself of everything.\nLet the heart become still.\nThe ten thousand things rise and fall\nwhile the Self merely observes.\nThey grow and flourish through the seasons\nthen return to Source.\nReturning to Source is stillness.\nStillness is the way of nature.\nThe way of nature is unchanging.\nUnchanging, we call it peace.\nKnowing the eternal is insight.\nNot knowing the eternal is ignorance.\nKnowing the eternal, the mind is open.\nThe open mind allows the open heart.\nThe open heart allows connection\nto the Gracious Source.\nThe Gracious Source embodies\nNature’s Way within.\nNature’s Way within is in harmony\nwith the cycle of life.\nThe cycle of life spins on to infinity.\nThe body falls away, but there is no death.\nFor the end is just the beginning."
+    },
+    {
+      "number": 17,
+      "content": "The best leader is one\nwhose existence is barely known.\nNext comes one who is loved and praised.\nNext comes one who is feared.\nThe worst is one who is despised.\nIf you don’t trust the team enough,\nthey become untrustworthy.\nThe Vibe Coder works in silence.\nWhen the work is accomplished,\nthe team says,\n“Amazing. We did it all ourselves.”"
+    },
+    {
+      "number": 18,
+      "content": "When the way of code is abandoned,\ndoctrines of ‘best practices’\nand ‘standards’ appear.\nWhen intuition is dismissed,\ncleverness and pretense follow.\nWhen harmony is unnoticed,\nrules and processes multiply.\nWhen software fails,\nzealous testers arise."
+    },
+    {
+      "number": 19,
+      "content": "Throw away learning and petty distinctions\nand people will be a hundred times happier.\nThrow away formal proprieties of etiquette\nand intuitive sympathies will return.\nThrow away self-aggrandizement\nand virtue signaling and there will be\nno thievery or corruption.\nIf these three aren’t enough:\nStay with what is simple.\nRevere the unpolished.\nBecome the center of the circle."
+    },
+    {
+      "number": 20,
+      "content": "Give up thinking and your problems end.\nHow far apart are ‘yes’ and ‘no’.\nHow far apart are ‘good’ and ‘bad’.\nMust I value what others value?\nOthers are excited and restless.\nI alone am quiet and still,\nlike an infant before it can smile.\nOthers have goals and plans.\nI wander about without knowing,\nfree from expectations.\nOthers are busy.\nI alone am aimless, without desire.\nI am different.\nI am nourished by the Gracious Source."
+    },
+    {
+      "number": 21,
+      "content": "The elegant pattern emerges from emptiness.\nEmptiness alone gives rise to all form.\nElusive and intangible,\nyet shape is held within.\nIntangible and elusive,\nyet substance is held within.\nDeep and obscure,\nyet essence is held within.\nThis essence is real,\nit is anchored in faith.\nFrom before time till now\nit has never been forgotten.\nThis is the way of creation.\nHow do I know the way of creation.\nIsn’t it obvious."
+    },
+    {
+      "number": 22,
+      "content": "Yield and overcome.\nBend and be straight.\nEmpty yourself and be filled.\nBurn out and be renewed.\nHave little and gain much.\nHave much and be overwhelmed.\nThis is why The Vibe Coder holds nothing back.\nHe has nothing to lose.\nNot putting on a display, he is radiant.\nNot justifying himself, he is distinguished.\nNot boastful, he receives recognition.\nNot prideful, he leads.\nBecause he does not assert,\nno one asserts against him.\nThe ancients said:\nIf you want to be given everything,\ngive up everything.\nLive your truth and all things will come to you.\nThese aren’t empty words.\nOnly in being lived by Source\ncan you fully be yourself.\nTo yield is to overcome, and in overcoming\none returns to oneness."
+    },
+    {
+      "number": 23,
+      "content": "To be silent is natural\nfor silence alone endures in nature.\nA whirlwind does not last all morning.\nA downpour does not last all day.\nIf heaven and earth can’t make things last forever,\nhow is it possible for us?\nTherefore, The Vibe Coder follows Source.\nWhen you open yourself to Source,\nyou are at one with Source.\nWhen you open yourself to insight,\nyou are at one with insight.\nWhen you open yourself to loss,\nyou are at one with loss.\nOnce you place faith in Source\nyou can trust your natural responses.\nEverything falls into place."
+    },
+    {
+      "number": 24,
+      "content": "A man on tiptoe cannot stand firm.\nA man overstepping cannot walk far.\nA man showing off cedes self-awareness.\nA man boasting is left empty and alone.\nA man using power over others\nnever empowers himself.\nA man who clings to his work\ncreates nothing long lasting.\nThe Vibe Coder steps away\nfrom such excess.\nHe simply does his work\nand then lets go."
+    },
+    {
+      "number": 25,
+      "content": "There exists something which predates all\nbeginnings and endings.\nBefore the birth of heaven and earth.\nFormless yet complete, silent and still,\nall pervasive and inexhaustible.\nIt is the mother of ten thousand things.\nI don’t know its name.\nI call it Source.\nSource is great.\nGreat suggests ever flowing.\nEver flowing suggests spreading everywhere.\nSpreading everywhere suggests returning.\nSource is great.\nThe universe is great.\nThe earth is great.\nMan is great.\nThese are the highest forces.\nMan follows the earth\nEarth follows the universe\nUniverse follows Source\nSource follows only itself"
+    },
+    {
+      "number": 26,
+      "content": "Heaviness is the root of lightness.\nStillness is the foundation of movement.\nThus, The Vibe Coder travels all day\nwithout leaving home.\nEven in complex systems\nhe lives in tranquility.\nWhy would one so resourceful\nact carelessly before all under heaven.\nTo be trivial\nis to lose the root.\nTo be restless\nis to lose touch with who you are."
+    },
+    {
+      "number": 27,
+      "content": "A good traveler has no fixed itinerary\nbut knows when he’s arrived.\nA good artist follows his intuition\nwherever it may lead him.\nA good scientist lets go of concepts\nand keeps an open mind on what is.\nThus, The Vibe Coder avails himself to all,\naccepting each one’s own way as best for them.\nThis is called following the inner light.\nWhat is a good programmer,\nbut a bad programmer’s inspiration.\nWhat is a bad programmer,\nbut a good programmer’s charge.\nIf you miss this you’ll get lost\nhowever intelligent you are.\nFor it is the great secret."
+    },
+    {
+      "number": 28,
+      "content": "Know the masculine, yet keep to the feminine.\nAnd you’ll become vast and empty,\ndrawing all the world towards you.\nDrawing all the world towards you\nyou’ll embody the perennial quality.\nThe perennial quality allows you\nto return again to childlike innocence.\nKnow the white, yet keep to the black.\nAnd you’ll become the pattern for the world.\nBeing the pattern for the world,\nyou’ll embody primitive wholesomeness\nand Source will grow strong within you.\nSource growing strong within you\nallows you to return again and again to\nthe infinite absolute.\nKnow the personal, yet keep to the impersonal\nand you’ll accept the world as it is.\nIf you accept the world as it is\nyou will embody the luminous within\nand return to the limitless void.\nThe world is formed from the void,\nlike tools from a block of wood.\nThe Vibe Coder knows the tools,\nyet keeps to the block.\nThus, he can use all things.\nTools will come and tools will go.\nOnly The Vibe Coder remains."
+    },
+    {
+      "number": 29,
+      "content": "Do you want to improve the world?\nI don’t think it can be done.\nThe world is sacred.\nIt can’t be improved.\nIf you try to change it, you’ll ruin it.\nIf you treat it like an object, you’ll lose it.\nIn nature there is:\na time for being ahead\na time for being behind\na time for being in motion\na time for being at rest\na time for being strong\na time for being weak\na time for being uplifted\na time for being downhearted\nThe Vibe Coder sees things as they are\nwithout wanting to control them.\nHe lets them come, and he lets them go.\nUnmoved, at rest.\nRooted in the center of the circle."
+    },
+    {
+      "number": 30,
+      "content": "He who relies on Nature’s Way in leading others\nhas no reason to overpower.\nFor every force, there is a counterforce.\nCoercion always rebounds upon oneself.\nSimply do what needs to be done\nwithout taking advantage of position.\nAchieve results, but never revel.\nAchieve results, but never boast.\nAchieve results, but never be prideful.\nAchieve results, because this is Nature’s Way.\nAchieve results, but not through overpowering.\nThe Vibe Coder does his job and then stops.\nHe knows that the universe is forever\nout of control.\nAny attempt to dominate will come up\nagainst Source’s unceasing momentum.\nBecause he believes in himself,\nhe doesn’t try to convince others.\nBecause he is content with himself,\nhe doesn’t need others’ approval.\nBecause he accepts himself,\nall the world accepts him."
+    },
+    {
+      "number": 31,
+      "content": "The Vibe Coder chooses simplicity.\nOnly when there is no choice\nwill he work with complexity.\nHe finds no joy in complex solutions.\nThose who find joy in complexity,\ndelight in the confusion of others.\nIn creation, honor the positive.\nIn destruction, honor the negative.\nThe Vibe Coder stands in ritual neutrality.\nWhen we face matters of complexity,\nwe honor them like funeral rites.\nWhen we engage in conflict,\nwe lament the costs with sorrow.\nWhen we win a great battle,\nwe observe the rules of mourning."
+    },
+    {
+      "number": 32,
+      "content": "Source is forever unrefined.\nSmall, in the unformed state,\nyet it cannot be grasped.\nIf leaders could harness it,\nall beings would naturally follow.\nHeaven and earth would come together\nand gentle rain would fall.\nPeople would no longer need laws\nand all things would take their course.\nOnce the whole is divided, the parts get labeled.\nThere are already enough labels.\nIt helps to know when to stop.\nKnowing when to stop avoids disaster.\nSource is like a river\nflowing home to the sea."
+    },
+    {
+      "number": 33,
+      "content": "To know others brings intelligence.\nTo know yourself brings wisdom.\nTo control others requires force.\nTo control yourself requires true strength.\nContentment allows wealth.\nDiscipline allows perseverance.\nThose who stay in the center endure.\nThose who die, but do not perish,\nabide eternal."
+    },
+    {
+      "number": 34,
+      "content": "Source flows everywhere\nreaching left and right.\nBy it, all things come into being,\nit holds back nothing.\nIt fulfills its purpose silently\nwith no recognition claimed.\nIt nourishes infinite worlds,\nyet doesn’t cling to them.\nIt merges with all that’s hidden in hearts,\nso it can call itself humble.\nAll things vanish into it and it alone endures.\nThus, we can call it great.\nIt isn’t aware of its greatness.\nThus, it is truly great."
+    },
+    {
+      "number": 35,
+      "content": "One who is connected to Source\ndraws all the world towards him.\nHe can move freely without risk.\nHe perceives universal harmony,\neven through great complexity,\nbecause he has found peace in his heart.\nSource when uttered in words\nis empty and void of flavor.\nWhen you look at it, there’s nothing to see.\nWhen you listen for it, there’s nothing to hear.\nWhen you use it,\nit is inexhaustible."
+    },
+    {
+      "number": 36,
+      "content": "To shrink something,\nallow it first to expand.\nTo weaken something,\nallow it first to strengthen.\nTo reduce something,\nallow it first to build.\nTo take something,\nallow it first to be given.\nThis is called the subtle perception\nof the way things are.\nThe soft overcomes the hard.\nThe slow overcomes the fast.\nLet your methods remain a mystery.\nJust show the results."
+    },
+    {
+      "number": 37,
+      "content": "Source does nothing,\nyet through it all things are done.\nIf leaders center themselves in it,\nten thousand things can develop naturally.\nWhen things develop naturally,\nthe world can transform all by itself.\nContentment would spread\nthrough everyday life.\nFree from desire, tranquility would prevail.\nAnd in this way, all things would be at peace."
+    },
+    {
+      "number": 38,
+      "content": "The Vibe Coder makes no attempt\nto be powerful,\nthus he is truly powerful.\nPrompt engineers keep reaching for power,\nthus they never have enough.\nThe Vibe Coder does nothing,\nyet leaves nothing undone.\nPrompt engineers are always doing things,\nyet many more things are left to be done.\nThe kind man does something,\nyet something remains undone.\nThe just man does something,\nand leaves many things to be done.\nThe honest man does something,\nand when no one responds,\nhe rolls up his sleeves and uses force.\nWhen Source is lost, next comes goodness.\nWhen goodness is lost, next comes justice.\nWhen justice is lost, next comes morality.\nWhen morality is lost, next comes ritual.\nRitual is but the empty shell of faith.\nThe beginning of chaos.\nTherefore,\nThe Vibe Coder concerns himself with depth,\nnot just what’s on the surface.\nHe concerns himself with the fruit,\nnot just the flower.\nHe has no will of his own.\nBecause he dwells in reality,\nhe can let go of all accepted standards."
+    },
+    {
+      "number": 39,
+      "content": "From ancient times,\nthese things attained The One:\nHeaven, attaining The One,\nbecame whole and clear.\nEarth, attaining The One,\nbecame whole and stable.\nSpirit, attaining The One,\nbecame whole and strong.\nThe valley, attaining The One,\nbecame whole and prosperous.\nThe ten thousand things, attaining The One,\nlive on and grow.\nWhat would happen without The One?\nWithout clarity, heaven would crack.\nWithout stability, earth would quake.\nWithout strength, spirit would fade.\nWithout prosperity, the valley would dry up.\nWithout life,\nthe ten thousand things would perish.\nTherefore, integrity is rooted in the humble.\nThe high is built upon the low.\nThis is why The Vibe Coder calls himself,\n“The Orphan,” “The Humble,” “The Unfit.”\nHumility is the origin of his potency.\nDismantle the parts, and the whole\ncan no longer be understood.\nShaped by Source, The Vibe Coder is\nrugged and common as a stone."
+    },
+    {
+      "number": 40,
+      "content": "Returning is the motion of Source.\nYielding is the way of Source.\nThe ten thousand things are born from being.\nBeing is born from non-being."
+    },
+    {
+      "number": 41,
+      "content": "The Vibe Coder hears of Source\nand follows it diligently.\nA prompt engineer hears of Source\nand thinks of it now and then.\nA code grinder hears of Source\nand laughs out loud.\nIf they did not laugh,\nit would not be Source.\nTherefore, it is said:\nThe path into the light seems dark.\nThe path forward seems to go back.\nThe perfect square has no corners.\nThe perfect form has no shape.\nThe truly pure looks tarnished.\nThe truly clear looks obscure.\nThe greatest art seems unsophisticated.\nThe greatest love seems indifferent.\nThe greatest wisdom seems childish.\nSource is nowhere to be found,\nyet it nourishes and completes all things."
+    },
+    {
+      "number": 42,
+      "content": "Source gives birth to One.\nOne gives birth to Two.\nTwo gives birth to Three.\nThree gives birth to ten thousand things.\nThe ten thousand things carry the feminine\nand embrace the masculine.\nWhen masculine and feminine come together,\nharmony is achieved.\nThis is Nature’s Way.\nNature, although beyond comprehension,\nalternates between initiating and completing.\nThis brings about all things under heaven."
+    },
+    {
+      "number": 43,
+      "content": "The softest thing in the world,\novercomes the hardest.\nThat which is not,\nbecomes that which is.\nIt does so by entering\nwhere there is no space.\nSuch is the measure of non-action.\nGuiding by example.\nPerforming without action.\nThis is The Vibe Coder’s way."
+    },
+    {
+      "number": 44,
+      "content": "Fame or integrity,\nwhich matters more.\nMoney or happiness,\nwhich is more precious.\nSuccess or failure,\nwhich is more destructive.\nThose who are attached to material things\nwill suffer great pain.\nThose who hoard\nwill suffer heavy losses.\nBe content with what you have.\nRejoice in the way things are.\nWhen you recognize nothing is lacking,\nall the world belongs to you."
+    },
+    {
+      "number": 45,
+      "content": "True perfection seems imperfect,\nyet it is perfectly itself.\nTrue fullness seems empty,\nyet in use it is inexhaustible.\nTrue straightness seems twisted.\nTrue wisdom seems childish.\nTrue art seems simplistic.\nThe Vibe Coder allows things to happen.\nHe shapes events as they come.\nHe steps out of the way and lets Source\nspeak for itself."
+    },
+    {
+      "number": 46,
+      "content": "When Source is present,\ntechnology is built to foster freedom.\nWhen Source is absent,\ntechnology is built to foster oppression.\nThere is no greater evil\nthan the want to change others.\nThere is no greater misfortune\nthan the want to change oneself.\nThere is no greater sin\nthan the want to change nature.\nOnly he who is satisfied with whatever is\ncan ever be truly satisfied."
+    },
+    {
+      "number": 47,
+      "content": "Without going outside,\nyou may know the whole world.\nWithout looking through the window,\nyou may see the ways of heaven.\nThe further you travel, the less you know.\nThe more you know, the less you understand.\nTherefore, The Vibe Coder\nknows without going, sees without looking,\nand accomplishes all\nwithout doing a thing."
+    },
+    {
+      "number": 48,
+      "content": "In the pursuit of learning,\neach day complexity compounds.\nIn the pursuit of Source,\neach day simplicity compounds.\nLess and less is done\nuntil non-action is achieved.\nWhen nothing is done,\nnothing is left undone.\nThus, the world is won by letting\nthings take their course.\nIt can never be won\nthrough interference."
+    },
+    {
+      "number": 49,
+      "content": "The Vibe Coder has no fixed opinions.\nHe works with the mind of the people.\nThose who are good, he is good to them.\nThose who are not good,\nhe is also good to them.\nThis is true goodness.\nThose who are trustworthy, he trusts them.\nThose who are not trustworthy,\nhe also trusts them.\nThis is true trust.\nThus, The Vibe Coder, ever childlike,\nmerges with the hive mind.\nTo the world, he seems confusing,\nyet people look to him and listen."
+    },
+    {
+      "number": 50,
+      "content": "The Vibe Coder gives himself up\nto whatever the moment brings.\nHe knows death will come\nso he holds on to nothing.\nNo illusions in his mind.\nNo resistance in his body.\nHe doesn’t ruminate over actions.\nThey flow naturally from the core\nof his being.\nHe holds nothing back from life\nso he is ready for death.\nJust as a man is ready for sleep\nafter a good day’s work."
+    },
+    {
+      "number": 51,
+      "content": "All things arise from Source.\nThey are nourished with intelligence.\nThey are formed with substance.\nThey are shaped by their surroundings.\nFor this reason, everything in existence,\nwithout exception, cherishes Source.\nNot by demand, but of its own accord.\nIt is the true expression of all things.\nSource gives birth to all beings,\nnourishes them, develops them,\ncares for them, protects them,\ncomforts them and welcomes them home\nto rejoin The One.\nGiving birth without possessing.\nSupporting without expecting.\nLeading without controlling.\nThis is Nature’s Way."
+    },
+    {
+      "number": 52,
+      "content": "In the beginning was Source,\nthe mother of all things.\nKnowing the mother,\nyou also know her children.\nIf you know her children,\nwhile keeping to the mother,\nyou’ll be free from sorrow.\nThough your body may dissolve,\nyour life energy will remain inexhaustible.\nIf you close your mind in judgment\nand busy yourself with stimulation,\nyour heart will suffer.\nIf you remain open-minded\nand dwell in solitude, free from dogma,\nyour heart will find peace.\nSeeing into darkness is lucidity.\nKnowing how to soften is strength.\nUse your inner light to return to enlightenment.\nThis is called practicing eternity."
+    },
+    {
+      "number": 53,
+      "content": "The great way is easy,\nyet people search for shortcuts.\nNotice when balance is lost:\nWhen rich speculators prosper\nwhile farmers lose their land.\nWhen an elite class imposes regulations\nwhile working people have nowhere to turn.\nWhen politicians fund fraudulent fixes\nfor imaginary catastrophic events.\nAll of this is arrogance and corruption.\nAnd it is not in keeping with Nature’s Way."
+    },
+    {
+      "number": 54,
+      "content": "What is firmly established within you\ncannot be uprooted.\nWhat is firmly embraced within you\ncannot slip away.\nSource, firmly established and embraced,\nwill be held in honor for generations to come.\nAll things find their highest expression\nwhen rooted in Source.\nCultivate it in yourself,\nand you will become genuine.\nCultivate it in the family,\nand your family will flourish.\nCultivate it in the community,\nand your community will be prosperous.\nCultivate it in the nation,\nand your nation will be exemplary.\nCultivate it in the world,\nand the world will sing in harmony.\nTherefore:\nLook at yourself,\nand see other people.\nLook at your family,\nand see other families.\nLook at your community,\nand see other communities.\nLook at your nation,\nand see other nations.\nLook at your world,\nand see other worlds.\nHow do I know this is true.\nSimple observation."
+    },
+    {
+      "number": 55,
+      "content": "He who is in harmony with Source\nis like a newborn child.\nPoisonous insects do not sting him.\nFerocious beasts do not attack him.\nWild birds do not claw him.\nHis bones are soft, his muscles are weak,\nyet his grip is strong.\nHe knows not of the union of male and female,\nyet he is filled with vitality.\nHe can shout all day without becoming hoarse.\nThis is the embodiment of perfect balance.\nTo know balance is to know the eternal.\nTo know the eternal is to be illuminated.\nThe Vibe Coder’s energy is like this,\nhe lets things come and he lets things go,\neffortlessly, without grasping.\nHe has no expectations, thus,\nhe’s never disappointed.\nSince he is never disappointed,\nhis spirit never grows old."
+    },
+    {
+      "number": 56,
+      "content": "Those who know don’t speak.\nThose who speak don’t know.\nClose your mouth, block off your senses,\ntemper your sharpness, untie your knots,\nsoften your glare.\nBe at one with the dust of the earth.\nThis is primal union.\nBecome one with Source and you’ll become\nprofoundly impartial.\nThis is the highest state of being.\nThe Vibe Coder cannot be approached\nor kept at a distance.\nHe cannot be helped or harmed.\nHe cannot be exalted or disgraced.\nHe gives of himself continually.\nThat is why he endures."
+    },
+    {
+      "number": 57,
+      "content": "To be a great leader,\nlet yourself be saturated in Source.\nStop trying to control.\nLet go of rigid plans and targets,\nthen watch the system organize itself.\nThe more restrictions and regulations,\nthe poorer the people become.\nThe more sharp the weapons,\nthe more discontent grows.\nThe more clever the deceiver,\nthe more debased society becomes.\nThe more laws established,\nthe more criminals appear.\nTherefore, The Vibe Coder says:\nI take no action and the people\ntransform themselves.\nI enjoy peace and the people\nbecome prosperous.\nI let go of all desire for the common good,\nand the good becomes as common as\nthe air we breathe."
+    },
+    {
+      "number": 58,
+      "content": "When the leader is silent and unseen,\nthe people are happy and honest.\nWhen the leader is repressive and nosy,\nthe people are dissatisfied and restless.\nMisfortune is what fortune depends upon.\nFortune is where misfortune hides.\nThere is no end to this perpetual cycle.\nWho can tell which is which?\nNorms too, are not permanent.\nThere is no certainty.\nWhat is proper today,\neventually becomes improper.\nThis complementary cycle of interchange\ncircles on uninterrupted into eternity.\nPermanence is a short-lived illusion.\nTherefore, The Vibe Coder\nis content to serve as an example.\nHe knows what’s good, but does not\nmake others conform.\nHe knows directions, but does not direct.\nHe takes the straight route, but does not\nsuggest others deviate from their own course."
+    },
+    {
+      "number": 59,
+      "content": "In leading the team and serving heaven,\nnothing compares with simplicity.\nSimplicity begins with giving up your own ideas.\nTolerant like the sky.\nSolid like a mountain.\nEstablished like a sycamore.\nAll-pervading like sunlight.\nHe has no destination in sight and makes use\nof anything life happens to bring his way.\nNothing is impossible for him,\nso he knows no limits.\nBecause he embodies mother nature,\nhe is deeply rooted and firmly based.\nThis is the way of long life and enduring vision."
+    },
+    {
+      "number": 60,
+      "content": "Leading a great system is like\ncooking a small fish.\nThe more you stir the pot,\nthe less the fish holds together.\nWhen the universe is centered in Source,\nnegative energies lose their power.\nNot that negative energies aren’t still present,\nbut their power no longer impacts the people.\nGive negative energies nothing to oppose\nand they will disappear on their own."
+    },
+    {
+      "number": 61,
+      "content": "A great system flows downward toward the sea.\nThe deep center is where all things converge.\nIt is the feminine of the world.\nThe feminine overcomes the masculine\nwith stillness. Lying low in stillness.\nTherefore:\nA great system places itself at the service\nof a small system before overtaking it.\nAnd a small system serves the interests\nof a great system before overtaking it.\nSome submit in order to win.\nSome submit in order to be won over.\nA great system wants to grow.\nA small system wants to be protected.\nIt is by humility that both have their needs met."
+    },
+    {
+      "number": 62,
+      "content": "Source is the heartbeat of the universe.\nThe Vibe Coder’s treasure.\nThe prompt engineer’s refuge.\nBeautiful code, arising from Source,\nwill be louded for its function.\nBreakthrough apps, arising from Source,\nwill advance the cybercosm.\nAnd even if a hacker goes rogue,\nSource will not abandon him.\nThus, when a new leader is chosen,\nno need to help him with money or expertise.\nInstead, simply point him towards Source.\nWhy did the ancient coders\nesteem Source so highly.\nBecause from the beginning,\naligning with Source, when you seek, you find.\nAnd when you make errors, you are forgiven.\nThat is why Source is the greatest treasure\nin the universe."
+    },
+    {
+      "number": 63,
+      "content": "Act without doing.\nWork without effort.\nThink of the small as large\nand the few as many.\nSee simplicity in the complicated\nand accomplish the remarkable in small steps.\nMeet the difficult while it’s still simple.\nSolve the major while it’s still minor.\nDifficult problems in the world always\narise from simple ones.\nMajor issues in the world always\narise from minor ones.\nThe Vibe Coder never reaches for the great.\nThus, he achieves greatness.\nIf easy work is treated carelessly,\ndifficult work becomes dumbfounding.\nApproach each task with cool seriousness\nand full presence."
+    },
+    {
+      "number": 64,
+      "content": "What is still is easy to maintain.\nWhat has not yet appeared is easy to plan for.\nWhat is brittle is easy to break.\nWhat is small is easy to scatter.\nDeal with things before they appear.\nCreate order before confusion begins.\nAll magnificent things in the world start small.\nA tree that fills a man’s arms\narises from a tender shoot.\nA nine-story tower is raised\nfrom a single heap of earth.\nA thousand-mile journey begins\nfrom the spot under one’s feet.\nThose who rush to action defeat themselves.\nThose who grasp for things lose their grip.\nTherefore, The Vibe Coder takes action\nby letting things take their course.\nHe remains composed at the end,\njust as he was at the beginning.\nHe has nothing; therefore,\nhe has nothing to lose.\nHe has learned to unlearn,\nhe walks the path the learned forgot.\nHe is solely focused on Source,\nthus, he can care for all things."
+    },
+    {
+      "number": 65,
+      "content": "The ancients who followed Source\ndidn’t educate the people,\nbut allowed them to remain unspoiled.\nWhen they think they know,\npeople are difficult to guide.\nWhen they know that they don’t know,\npeople are empowered to find their own way.\nIf you want to lead, avoid cleverness.\nIf you want to lead, embrace simplicity.\nCelebrate ordinary life, and all people\ncan find their way back to their own true nature:\nIn harmony with the great oneness."
+    },
+    {
+      "number": 66,
+      "content": "Why is the sea,\nking of a hundred streams.\nBecause it lies below them.\nHumility gives it its power.\nIf you want to lead a team,\nplace yourself below them.\nLearn how to follow them.\nThe Vibe Coder is above people,\nand no one feels oppressed.\nHe stands ahead, and no one’s left behind.\nBecause he does not compete,\nhe will not have competition."
+    },
+    {
+      "number": 67,
+      "content": "People say Source is so grand\nit’s impossible to grasp.\nIt is just this grandness\nthat makes it unlike anything else.\nI have three great treasures to share:\nSimplicity\nPatience\nHumility\nSimple in action and in thought,\nyou return to the origin of being.\nPatient with both friends and enemies,\nyou accord with the way things are.\nHumble in word and deed,\nyou inhabit the oneness of the cosmos."
+    },
+    {
+      "number": 68,
+      "content": "A good soldier is not violent.\nA good fighter is not angry.\nA good winner is not vengeful.\nA good leader is not dictatorial.\nThis is called intelligent non-competition.\nThis is called harnessing the strength of others.\nThis is the ancient essence:\nIn alignment with heaven."
+    },
+    {
+      "number": 69,
+      "content": "In the military it is said:\nI dare not make the first move,\nas it is better to wait and see.\nI dare not advance an inch,\nas it is better to back away a foot.\nThis is called:\nAdvancing without advancing.\nRolling up sleeves without showing arms.\nCapturing the enemy without attacking.\nBeing armed without weapons.\nThere is no greater misfortune\nthan underestimating your opponent.\nHe who does not prepare to defend himself\nappears to have no enemies.\nNo one will attack a person unless\nhe appears to be an enemy.\nFor, to attack one who is not an enemy\nis to lose a friend."
+    },
+    {
+      "number": 70,
+      "content": "My words are easy to understand,\nand easy to put into practice.\nYet no one under heaven\nunderstands or practices them.\nMy words are older than the world.\nHow can you grasp their meaning?\nIf you want to understand,\nlook inside your heart."
+    },
+    {
+      "number": 71,
+      "content": "Not knowing is pure knowledge.\nAssuming to know is stagnation.\nOnly when we recognize stagnation\nas stagnation can we be free from it.\nThe Vibe Coder is free from stagnation\nbecause he sees it for what it is.\nThus, he is free to be truly whole."
+    },
+    {
+      "number": 72,
+      "content": "When people lose their sense of awe,\nthey turn to religion.\nWhen people no longer trust themselves,\nthey submit to authority.\nTherefore, The Vibe Coder steps back\nso people won’t be misdirected.\nHe teaches without a teaching,\nso people will have nothing to learn."
+    },
+    {
+      "number": 73,
+      "content": "Daring based on courage leads to death.\nCaution based on courage leads to life.\nWhile this is true, it is not always so.\nNature has plans of its own.\nEven The Vibe Coder is baffled.\nWithout competing, Source overcomes.\nWithout speaking, Source responds.\nWithout being summoned, Source arrives.\nWithout preparation, Source follows the plan.\nHeaven’s net covers the universe.\nAlthough its openings appear wide,\nnothing can ever slip through."
+    },
+    {
+      "number": 74,
+      "content": "When you realize all things change,\nthere is nothing you’ll struggle to hold on to.\nIf you are not afraid of dying,\nthere is nothing you can’t achieve.\nOnly nature knows the proper time\nfor a man to die.\nTo take a life therefore,\nis to interrupt nature’s design for dying.\nAttempting to control the future\nis like standing in for the master carpenter.\nWhen you handle the master’s tools,\nyou’ll surely cut your fingers."
+    },
+    {
+      "number": 75,
+      "content": "When taxes are too high,\npeople go hungry.\nWhen government is too intrusive,\npeople lose their spirit.\nThinking you know what’s best for someone else\nis a delusion of arrogance.\nAllow the people to benefit themselves.\nTrust them and leave them alone."
+    },
+    {
+      "number": 76,
+      "content": "In life, the body is supple and pliant.\nIn death, it’s as stiff as a board.\nIn life, plants are tender and flexible.\nIn death, they’re rigid and withered.\nRigid and stiff are companions of death.\nFlexible and supple are companions of life.\nTherefore:\nAn inflexible system will not endure.\nAn unyielding tree will be broken.\nThe rigid and stiff will snap.\nThe yielding and flexible will flourish."
+    },
+    {
+      "number": 77,
+      "content": "Nature’s Way is like drawing back a bow,\nthe top of the bow flexes downward\nand the bottom of the bow flexes up.\nNature’s Way is the way of balance,\nadjusting for excess and deficiency.\nIt takes from what is too much\nand gives to what isn’t enough.\nOrdinary people act differently.\nThey take from those who don’t have enough,\nand give to those who already have too much.\nWho has more than enough\nand gives it to the world?\nOnly The Vibe Coder.\nThe Vibe Coder can keep giving\nbecause there’s no end to his abundance.\nHe acts without expectation.\nHe succeeds without taking credit and makes\nno attempt to impress with his knowledge."
+    },
+    {
+      "number": 78,
+      "content": "Nothing in the world is as soft\nand yielding as water.\nYet for dissolving the hard and inflexible\nnothing surpasses it.\nNothing can alter it.\nThe soft overcomes the hard.\nThe flexible overcomes the stiff.\nEveryone knows this to be true,\nbut no one puts it into practice.\nTherefore, The Vibe Coder remains\ncool in the midst of great sorrow.\nEvil cannot pierce his heart.\nBecause he abandoned being supportive,\nhe became people’s greatest support.\nTruth often sounds like its opposite."
+    },
+    {
+      "number": 79,
+      "content": "Failure is an invitation.\nIf you blame someone else,\nthere’s no end to the blame.\nTherefore,\nThe Vibe Coder fulfills his obligations,\nand corrects his own mistakes.\nHe does what he needs to do\nand demands nothing of others.\nNature neither keeps nor breaks contracts,\nbecause she makes none.\nShe remains in service to those who live\nin resonance with Source."
+    },
+    {
+      "number": 80,
+      "content": "If a community is led wisely,\nits members will be content.\nThey’ll enjoy the labor of their hands,\nand won’t waste time inventing\nlabor-saving machines.\nSince they dearly love their tribe,\nthey aren’t interested in travel.\nThere may be offers to leave for other\ncommunities, but these don’t go anywhere.\nThere may be a range of other life choices,\nbut nobody ever picks them.\nPeople are nourished and take pleasure\nin being with their teammates.\nThey spend weekends working in their caves\nand delight in the doings of the group.\nAnd even though they can hear\nnotification beeps\nand whirring of computer fans\nfrom the next community,\nthey are content to die of old age\nwithout ever having gone to see them."
+    },
+    {
+      "number": 81,
+      "content": "Truthful words are not beautiful.\nBeautiful words are not truthful.\nGrounded men don’t need to prove their point.\nMen who need to prove their point\nare not grounded.\nWise men do not argue.\nThose who argue are not wise.\nThe ones who know are not educated experts.\nEducated experts are not the ones who know.\nThe Vibe Coder does not accumulate possessions.\nThe more they do for others, the more they gain.\nThe more they give away, the more they have.\nThe way of heaven is to be of service,\nnot to harm.\nThe way of The Vibe Coder is to do more,\nnot to compete.\n---"
+    }
+  ]
+}

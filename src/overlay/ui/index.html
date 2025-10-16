@@ -10,6 +10,13 @@
     <!-- Contenido del artículo a pantalla completa -->
     <webview id="article-view" src="about:blank"></webview>
 
+    <button id="tts-toggle" class="tts-toggle" aria-label="Alternar lectura" aria-pressed="false" title="Leer poema (T)">
+        <svg viewBox="0 0 24 24" role="img" focusable="false" aria-hidden="true">
+            <path d="M5 9v6h3l4 4V5L8 9H5z" />
+            <path d="M16 8.82a2.5 2.5 0 0 1 0 6.36M18.5 6a6 6 0 0 1 0 12" />
+        </svg>
+    </button>
+
     <!-- Pill del timer centrado abajo -->
     <div class="timer-pill" id="timer-pill">
         <span id="minutes">00</span>:<span id="seconds">00</span>

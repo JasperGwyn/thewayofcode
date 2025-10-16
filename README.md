@@ -23,8 +23,28 @@ A teaching. A mirror. A whisper from the source.
 - Lives quietly in your tray — unseen, but present  
 - Opens a 2-minute ritual break every 30 minutes (configurable)  
 - Speaks only once: a sound when the break ends  
-- Can be silenced, paused, or left to guide you  
-- Remembers your preferences in silence  
+- Can be silenced, paused, or left to guide you
+- Remembers your preferences in silence
+- **🎵 Premium Text-to-Speech**: 30 ultra-natural Chirp3-HD voices from Google Cloud
+
+---
+
+## 🎵 Text-to-Speech Features
+
+**Now using Google Cloud TTS with Chirp3-HD Ultra Premium Voices!**
+
+- ✅ **30 high-quality Chirp3-HD voices** (named after stars/constellations)
+- ✅ **Random voice selection** for each poem playback
+- ✅ **Male and female voices** available
+- ✅ **Ultra natural speech synthesis**
+- ✅ **No more robotic TTS** - premium quality every time
+
+### Available Voices
+The app randomly selects from 30 premium voices including:
+- **Female**: Achernar, Aoede, Autonoe, Callirrhoe, Despina, Erinome, Gacrux, Kore, Laomedeia, Leda, Pulcherrima, Sulafat, Vindemiatrix, Zephyr
+- **Male**: Achird, Algenib, Algieba, Alnilam, Charon, Enceladus, Fenrir, Iapetus, Orus, Puck, Rasalgethi, Sadachbia, Sadaltager, Schedar, Umbriel, Zubenelgenubi
+
+Each time you play a poem, you'll hear a different random voice!
 
 ---
 
