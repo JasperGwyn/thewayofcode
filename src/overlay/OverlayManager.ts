@@ -1,9 +1,6 @@
-import { BrowserWindow, screen, ipcMain } from 'electron';
-import https from 'https';
-import fs from 'fs';
+import { app, BrowserWindow, screen, ipcMain } from 'electron';
 import path from 'path';
-import os from 'os';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { logger } from '../log.js';
 import { createOverlayWindow } from './createOverlayWindow.js';
@@ -16,9 +13,38 @@ import { protos } from '@google-cloud/text-to-speech';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+const resolveTtsKeyPath = (): string => {
+  const fileName = 'the-way-of-code-a39c1f8438eb.json';
+  const candidates: string[] = [];
+
+  if (app.isPackaged) {
+    candidates.push(
+      path.join(process.resourcesPath, 'app', 'keys', fileName),
+      path.join(process.resourcesPath, 'keys', fileName),
+      path.join(process.cwd(), 'resources', 'app', 'keys', fileName)
+    );
+  } else {
+    candidates.push(
+      path.join(process.cwd(), 'keys', fileName),
+      path.join(process.cwd(), 'dist', 'keys', fileName)
+    );
+  }
+
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) {
+      logger.info(`OverlayManager: TTS key file resolved to ${candidate}`);
+      return candidate;
+    }
+  }
+
+  const fallback = path.join(process.cwd(), 'keys', fileName);
+  logger.warn(`OverlayManager: TTS key file not found in packaged paths, falling back to ${fallback}`);
+  return fallback;
+};
+
 // Google Cloud TTS client and voices
 const gcpTtsClient = new TextToSpeechClient({
-  keyFilename: path.join(process.cwd(), 'keys', 'the-way-of-code-a39c1f8438eb.json')
+  keyFilename: resolveTtsKeyPath()
 });
 
 // Available Chirp3-HD voices for English
@@ -89,30 +115,6 @@ function splitText(text: string, maxLength = 180): string[] {
   return chunks;
 }
 
-async function speakChunk(chunk: string, lang: string): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    const encodedText = encodeURIComponent(chunk);
-    const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${lang}&client=tw-ob&q=${encodedText}`;
-
-    https.get(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-      }
-    }, (response) => {
-      if (response.statusCode !== 200) {
-        reject(new Error(`HTTP ${response.statusCode}`));
-        return;
-      }
-
-      const chunks: Buffer[] = [];
-      response.on('data', (chunk) => chunks.push(chunk));
-      response.on('end', () => {
-        resolve(Buffer.concat(chunks));
-      });
-    }).on('error', reject);
-  });
-}
-
 type PoemChapter = {
   number: number;
   content: string;
@@ -124,6 +126,7 @@ type PoemsJson = {
 
 type OverlayInitUiPayload = {
   breakSeconds: number;
+  ttsEnabled: boolean;
 };
 
 type OverlayArticleLoadedUiPayload = {
@@ -174,9 +177,9 @@ export class OverlayManager {
   private setupIpcListeners(): void {
     logger.info('OverlayManager: Setting up IPC listeners');
 
-    ipcMain.on('break:start', (_event, breakSeconds: number) => {
-      logger.info(`OverlayManager: break:start received, duration: ${breakSeconds}s`);
-      this.showOverlays(breakSeconds);
+    ipcMain.on('break:start', (_event, breakSeconds: number, ttsEnabled: boolean) => {
+      logger.info(`OverlayManager: break:start received, duration: ${breakSeconds}s, ttsEnabled: ${ttsEnabled}`);
+      this.showOverlays(breakSeconds, ttsEnabled);
     });
 
     ipcMain.on('break:end', () => {
@@ -260,7 +263,7 @@ export class OverlayManager {
     });
   }
 
-  public async showOverlays(breakSeconds: number): Promise<void> {
+  public async showOverlays(breakSeconds: number, ttsEnabled: boolean): Promise<void> {
     if (this.isActive) {
       logger.warn('OverlayManager: Overlays already active, skipping');
       return;
@@ -303,7 +306,7 @@ export class OverlayManager {
         });
 
         // Enviar datos al renderer (se encolarán hasta que cargue)
-        this.sendMessageToOverlayUi(overlayState, { channel: 'overlay:init', payload: { breakSeconds } });
+        this.sendMessageToOverlayUi(overlayState, { channel: 'overlay:init', payload: { breakSeconds, ttsEnabled } });
         this.sendMessageToOverlayUi(overlayState, {
           channel: 'overlay:article-loaded',
           payload: { url: article.url, articleId: article.id },
@@ -546,12 +549,22 @@ export class OverlayManager {
     void this.soundManager.stopAudio();
   }
 
+  private resolvePoemsPath(): string {
+    const fileName = 'poems.json';
+    const subPath = path.join('assets', 'poems', fileName);
+
+    if (app.isPackaged) {
+      return path.join(process.resourcesPath, 'app', subPath);
+    }
+    return path.join(process.cwd(), subPath);
+  }
+
   private loadPoemsJson(): PoemsJson {
     if (this.poemsCache) {
       return this.poemsCache;
     }
 
-    const jsonPath = path.join(process.cwd(), 'assets', 'poems', 'poems.json');
+    const jsonPath = this.resolvePoemsPath();
 
     try {
       const raw = readFileSync(jsonPath, 'utf-8');

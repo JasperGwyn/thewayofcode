@@ -118,9 +118,9 @@ export class TrayManager {
     // Load current settings (use cached when available)
     const currentSettings = this.cachedSettings ?? await this.settingsManager.loadSettings();
     this.cachedSettings = currentSettings;
-    const startWithWindowsLabel = currentSettings.startWithWindows
-      ? '✓ Start with Windows'
-      : 'Start with Windows';
+    const ttsEnabledLabel = currentSettings.ttsEnabled
+      ? '✓ TTS Enabled'
+      : 'TTS Disabled';
 
     // Compute a human-readable remaining time label
     const remainingLabel = this.getRemainingTimeLabel(status, currentSettings);
@@ -137,8 +137,8 @@ export class TrayManager {
         click: () => this.handlePauseToggle(),
       },
       {
-        label: startWithWindowsLabel,
-        click: () => this.handleStartWithWindowsToggle(),
+        label: ttsEnabledLabel,
+        click: () => this.handleTtsToggle(),
       },
       {
         label: 'Settings...',
@@ -226,22 +226,22 @@ export class TrayManager {
     setTimeout(() => this.updateContextMenu(), 100);
   }
 
-  private async handleStartWithWindowsToggle(): Promise<void> {
+  private async handleTtsToggle(): Promise<void> {
     try {
       const currentSettings = this.cachedSettings ?? await this.settingsManager.loadSettings();
       const newSettings: AppSettings = {
         ...currentSettings,
-        startWithWindows: !currentSettings.startWithWindows,
+        ttsEnabled: !currentSettings.ttsEnabled,
       };
 
       await this.settingsManager.saveSettings(newSettings);
       this.cachedSettings = newSettings;
-      logger.info(`Start with Windows toggled to: ${newSettings.startWithWindows}`);
+      logger.info(`TTS toggled to: ${newSettings.ttsEnabled}`);
 
       // Update menu after action
       await this.updateContextMenu();
     } catch (error) {
-      logger.error('Failed to toggle start with Windows setting', error);
+      logger.error('Failed to toggle TTS setting', error);
     }
   }
 
@@ -255,11 +255,12 @@ export class TrayManager {
     }
   }
 
-  private handleForceOverlay(): void {
+  private async handleForceOverlay(): Promise<void> {
     logger.info('Force overlay requested (30 seconds)');
     try {
       // Force overlay with 30 seconds duration
-      this.overlayManager.showOverlays(30);
+      const settings = this.cachedSettings ?? await this.settingsManager.loadSettings();
+      await this.overlayManager.showOverlays(30, settings.ttsEnabled);
       logger.info('Force overlay activated for 30 seconds');
     } catch (error) {
       logger.error('Failed to activate force overlay', error);

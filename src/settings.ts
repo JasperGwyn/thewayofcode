@@ -11,12 +11,14 @@ export interface AppSettings {
   intervalMinutes: number;
   breakSeconds: number;
   startWithWindows: boolean;
+  ttsEnabled: boolean;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
   intervalMinutes: 30,
   breakSeconds: 120,
   startWithWindows: false,
+  ttsEnabled: true,
 };
 
 const SETTINGS_FILE_NAME = 'settings.json';
@@ -46,9 +48,12 @@ export class SettingsManager {
         startWithWindows: typeof parsed.startWithWindows === 'boolean'
           ? parsed.startWithWindows
           : DEFAULT_SETTINGS.startWithWindows,
+        ttsEnabled: typeof parsed.ttsEnabled === 'boolean'
+          ? parsed.ttsEnabled
+          : DEFAULT_SETTINGS.ttsEnabled,
       };
 
-      logger.info(`Settings loaded: interval=${settings.intervalMinutes}min, break=${settings.breakSeconds}s, startWithWindows=${settings.startWithWindows}`);
+      logger.info(`Settings loaded: interval=${settings.intervalMinutes}min, break=${settings.breakSeconds}s, startWithWindows=${settings.startWithWindows}, ttsEnabled=${settings.ttsEnabled}`);
       return settings;
     } catch (error) {
       const err = error as NodeJS.ErrnoException;
@@ -64,7 +69,7 @@ export class SettingsManager {
   async saveSettings(settings: AppSettings): Promise<void> {
     try {
       await fs.writeFile(this.settingsPath, JSON.stringify(settings, null, 2), 'utf-8');
-      logger.info(`Settings saved: interval=${settings.intervalMinutes}min, break=${settings.breakSeconds}s, startWithWindows=${settings.startWithWindows}`);
+      logger.info(`Settings saved: interval=${settings.intervalMinutes}min, break=${settings.breakSeconds}s, startWithWindows=${settings.startWithWindows}, ttsEnabled=${settings.ttsEnabled}`);
 
       // Apply auto-start setting
       await this.applyAutoStartSetting(settings.startWithWindows);

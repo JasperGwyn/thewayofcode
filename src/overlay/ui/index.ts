@@ -1,6 +1,7 @@
 // Comunicación con el proceso main de Electron
 type OverlayInitPayload = {
   breakSeconds: number;
+  ttsEnabled: boolean;
 };
 
 type ArticleLoadedPayload = {
@@ -104,6 +105,9 @@ const {
   ttsSpeak: overlayTtsSpeak,
   ttsStop: overlayTtsStop,
 } = getBoundFunctions();
+
+// Estado global
+let ttsEnabled = true; // Default habilitado
 
 // Log inicial para confirmar que el script se carga
 const overlayPosition = { x: window.screenX, y: window.screenY };
@@ -229,13 +233,16 @@ function initializeOverlay(): void {
   onInit((data) => {
     sendLog(`Received overlay:init event with data: ${JSON.stringify(data)} at window position: ${window.screenX}, ${window.screenY}`);
     remainingSeconds = data.breakSeconds;
+    ttsEnabled = data.ttsEnabled;
     initReceived = true;
     maybeNotifyReady();
 
-    // 🔥 AUTO-TTS: Si hay un poema desde URL, iniciar TTS automáticamente
-    if (overlayChapterNumber !== undefined) {
+    // 🔥 AUTO-TTS: Si hay un poema desde URL, iniciar TTS automáticamente (solo si está habilitado)
+    if (overlayChapterNumber !== undefined && ttsEnabled) {
       sendLog(`AUTO-TTS: URL poem detected (chapter ${overlayChapterNumber}), starting TTS...`);
       void ttsStart('en', overlayChapterNumber);
+    } else if (overlayChapterNumber !== undefined && !ttsEnabled) {
+      sendLog(`AUTO-TTS: URL poem detected but TTS is disabled`);
     }
   });
 
@@ -353,27 +360,12 @@ if (articleView) {
   });
 }
 
-async function getArticleText(): Promise<string> {
-  if (!articleView) {
-    sendLog('TTS: webview no encontrado');
-    return '';
-  }
-  try {
-    const text = await articleView.executeJavaScript(
-      `(() => {
-        const el = document.querySelector('article,[role="article"]') || document.body;
-        return el ? el.innerText : '';
-      })()`,
-      true
-    );
-    return (String(text ?? '')).trim();
-  } catch (_error) {
-    sendLog('TTS: error extrayendo texto del artículo');
-    return '';
-  }
-}
-
 async function ttsStart(langHint: 'en' | 'es' | 'auto' = 'auto', poemChapterOverride?: number): Promise<void> {
+  if (!ttsEnabled) {
+    sendLog('TTS: TTS is disabled, skipping start request');
+    return;
+  }
+
   const lang = langHint === 'en' ? 'en-US' : (langHint === 'es' ? 'es-ES' : 'en-US');
   const payload: { text: string; lang: string; poemChapter?: number } = {
     text: '',

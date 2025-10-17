@@ -4,7 +4,7 @@ import { emitToRenderer } from './ipc.js';
 import type { AppSettings } from './settings.js';
 
 export interface SchedulerEvents {
-  onBreakStart: (_breakSeconds: number) => void;
+  onBreakStart: (_breakSeconds: number, _ttsEnabled: boolean) => void;
   onBreakEnd: () => void;
 }
 
@@ -62,12 +62,12 @@ export class BreakScheduler {
     this.isBreakActive = true;
     logger.info(`Break started (duration: ${this.settings.breakSeconds}s)`);
 
-    // Emit IPC event with break duration (for any renderer listeners)
-    logger.info(`Scheduler: Emitting break:start with ${this.settings.breakSeconds} seconds`);
-    emitToRenderer('break:start', this.settings.breakSeconds);
+    // Emit IPC event with break duration and TTS setting (for any renderer listeners)
+    logger.info(`Scheduler: Emitting break:start with ${this.settings.breakSeconds} seconds, ttsEnabled: ${this.settings.ttsEnabled}`);
+    emitToRenderer('break:start', this.settings.breakSeconds, this.settings.ttsEnabled);
 
     // Notify main listeners directly (OverlayManager, etc.)
-    this.events.onBreakStart(this.settings.breakSeconds);
+    this.events.onBreakStart(this.settings.breakSeconds, this.settings.ttsEnabled);
 
     // Schedule break end (includes any display delay so UI has full time)
     const totalBreakMs = this.settings.breakSeconds * 1000 + this.displayDelayMs;

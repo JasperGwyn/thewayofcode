@@ -48,13 +48,13 @@ app.on('ready', async () => {
 
     // Initialize scheduler with break event handler
     scheduler = new BreakScheduler(settings, {
-      onBreakStart: (breakSeconds: number) => {
+      onBreakStart: (breakSeconds: number, ttsEnabled: boolean) => {
         logger.info('Break started - activating overlays');
         try {
-          if (overlayManager) {
-            overlayManager.showOverlays(breakSeconds);
+          if (overlayManager && settingsManager) {
+            overlayManager.showOverlays(breakSeconds, ttsEnabled);
           } else {
-            logger.warn('OverlayManager not ready on break start');
+            logger.warn('OverlayManager or SettingsManager not ready on break start');
           }
         } catch (err) {
           logger.error('Failed to activate overlays on break start', err);

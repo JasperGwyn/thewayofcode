@@ -27,7 +27,8 @@
     },
     "files": [
       "dist/**/*",
-      "assets/**/*"
+      "assets/**/*",
+      "keys/**/*"
     ],
     "win": {
       "target": "nsis",
