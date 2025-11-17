@@ -10,13 +10,11 @@ export interface SchedulerEvents {
 
 export class BreakScheduler {
   private intervalId: NodeJS.Timeout | null = null;
-  private breakTimeoutId: NodeJS.Timeout | null = null;
   private pausedUntil: Date | null = null;
   private lastBreakTime: Date = new Date();
   private isBreakActive: boolean = false;
   private settings: AppSettings;
   private events: SchedulerEvents;
-  private displayDelayMs: number = 0;
 
   constructor(settings: AppSettings, events: SchedulerEvents) {
     this.settings = settings;
@@ -69,11 +67,8 @@ export class BreakScheduler {
     // Notify main listeners directly (OverlayManager, etc.)
     this.events.onBreakStart(this.settings.breakSeconds, this.settings.ttsEnabled);
 
-    // Schedule break end (includes any display delay so UI has full time)
-    const totalBreakMs = this.settings.breakSeconds * 1000 + this.displayDelayMs;
-    this.breakTimeoutId = setTimeout(() => {
-      this.endBreak();
-    }, totalBreakMs);
+    // Note: Break end is now controlled by the overlay countdown completion
+    // No longer using a timeout here to avoid premature break termination
   }
 
   private endBreak(): void {
@@ -90,12 +85,6 @@ export class BreakScheduler {
 
     // Also call the event handler
     this.events.onBreakEnd();
-
-    // Clear timeout
-    if (this.breakTimeoutId) {
-      clearTimeout(this.breakTimeoutId);
-      this.breakTimeoutId = null;
-    }
   }
 
   private scheduleNextBreak(): void {
@@ -137,10 +126,6 @@ export class BreakScheduler {
       clearInterval(this.intervalId);
       this.intervalId = null;
     }
-    if (this.breakTimeoutId) {
-      clearTimeout(this.breakTimeoutId);
-      this.breakTimeoutId = null;
-    }
     if (this.isBreakActive) {
       this.endBreak();
     }
@@ -164,9 +149,8 @@ export class BreakScheduler {
     this.scheduleNextBreak(); // Reschedule with new settings
   }
 
-  setDisplayDelayMs(ms: number): void {
-    this.displayDelayMs = Math.max(0, Math.floor(ms));
-    logger.info(`Scheduler: display delay set to ${this.displayDelayMs}ms`);
+  getIsBreakActive(): boolean {
+    return this.isBreakActive;
   }
 
   getStatus(): {

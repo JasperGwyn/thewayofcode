@@ -1,7 +1,7 @@
 {
-  "name": "electron-break-timer",
-  "version": "1.2.0",
-  "description": "Electron app that runs in system tray and triggers breaks every 30 minutes",
+  "name": "thewayofcode-breaktimer",
+  "version": "1.2.2",
+  "description": "When the machine rests, the code breathes.",
   "main": "dist/main.js",
   "type": "module",
   "scripts": {

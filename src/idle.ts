@@ -52,6 +52,13 @@ export class IdleManager {
 
   private enterIdle(source: string): void {
     if (this.isInIdle) return;
+    
+    // Don't enter idle mode if there's an active break - breaks are intentional idle time
+    if (this.scheduler.getIsBreakActive()) {
+      logger.info(`IdleManager: System idle detected but break is active, ignoring idle state`);
+      return;
+    }
+    
     this.isInIdle = true;
     logger.info(`IdleManager: entering standby due to ${source}`);
 

@@ -135,6 +135,7 @@ let countdownStarted = false;
 let countdownInterval: NodeJS.Timeout | null = null;
 let currentArticleId: number | undefined;
 let isTtsActive = false;
+let totalBreakSeconds = 0;
 
 /**
  * Formatea un número como string de dos dígitos
@@ -167,28 +168,48 @@ function updateDisplay(): void {
  * Inicia el contador regresivo
  */
 function startCountdown(): void {
-  if (countdownInterval) {
-    clearInterval(countdownInterval);
+  if (countdownStarted) {
+    sendLog('Countdown already started, skipping');
+    return;
   }
 
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
+
+  countdownStarted = true;
+
+  sendLog(`Starting countdown with ${remainingSeconds} seconds remaining`);
+
+  // Actualizar la visualización inicial
   updateDisplay();
 
   countdownInterval = setInterval(() => {
+    // Decrementar primero
     remainingSeconds--;
 
+    // Actualizar la visualización siempre (incluyendo cuando llega a 0)
+    updateDisplay();
+
+    // Verificar si terminó después de actualizar la visualización
     if (remainingSeconds <= 0) {
       // El contador terminó, el proceso main debería cerrar automáticamente
       if (countdownInterval) {
         clearInterval(countdownInterval);
         countdownInterval = null;
       }
-      // Solicitar cierre automático por fin del timer
-      sendLog('Timer ended - requesting close (auto)');
-      requestCloseBreakByTimer();
+      
+      // Asegurar que se muestre 00:00 antes de cerrar
+      sendLog(`Timer reached 0 - total break duration was ${totalBreakSeconds}s`);
+      
+      // Esperar un momento para asegurar que se muestre el 00:00 antes de cerrar
+      setTimeout(() => {
+        sendLog('Timer ended - requesting close (auto)');
+        requestCloseBreakByTimer();
+      }, 500);
       return;
     }
-
-    updateDisplay();
   }, 1000);
 }
 
@@ -233,8 +254,10 @@ function initializeOverlay(): void {
   onInit((data) => {
     sendLog(`Received overlay:init event with data: ${JSON.stringify(data)} at window position: ${window.screenX}, ${window.screenY}`);
     remainingSeconds = data.breakSeconds;
+    totalBreakSeconds = data.breakSeconds;
     ttsEnabled = data.ttsEnabled;
     initReceived = true;
+    countdownStarted = false; // Resetear el flag cuando se recibe un nuevo init
     maybeNotifyReady();
 
     // 🔥 AUTO-TTS: Si hay un poema desde URL, iniciar TTS automáticamente (solo si está habilitado)
@@ -252,9 +275,11 @@ function initializeOverlay(): void {
   });
 
   onShowNow(() => {
+    sendLog(`Received overlay:show-now - countdownStarted=${countdownStarted}, remainingSeconds=${remainingSeconds}`);
     if (!countdownStarted) {
-      countdownStarted = true;
       startCountdown();
+    } else {
+      sendLog('Warning: overlay:show-now received but countdown already started');
     }
   });
 }
