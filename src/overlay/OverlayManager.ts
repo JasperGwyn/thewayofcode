@@ -166,6 +166,7 @@ export class OverlayManager {
   private poemsCache: PoemsJson | null = null;
   private poemIndex: number = 0;
   private readonly soundManager: SoundManager;
+  private ttsEnabled: boolean = true; // Default habilitado, se actualiza cuando se muestra el overlay
 
   constructor() {
     this.overlayUiHtmlPath = path.join(__dirname, 'ui', 'index.html');
@@ -179,6 +180,7 @@ export class OverlayManager {
 
     ipcMain.on('break:start', (_event, breakSeconds: number, ttsEnabled: boolean) => {
       logger.info(`OverlayManager: break:start received, duration: ${breakSeconds}s, ttsEnabled: ${ttsEnabled}`);
+      this.ttsEnabled = ttsEnabled;
       this.showOverlays(breakSeconds, ttsEnabled);
     });
 
@@ -240,6 +242,10 @@ export class OverlayManager {
     // TTS: speak using Google Translate TTS (free)
     ipcMain.on('overlay:tts-speak', async (_event, payload: OverlayTtsSpeakPayload) => {
       try {
+        if (!this.ttsEnabled) {
+          logger.info('OverlayManager: TTS está desactivado, ignorando solicitud de speak');
+          return;
+        }
         const text = payload?.text ? (payload.text).toString() : undefined;
         const lang = (payload?.lang ?? 'en').toString();
         const poemChapter = typeof payload?.poemChapter === 'number' && Number.isFinite(payload.poemChapter)
@@ -269,6 +275,7 @@ export class OverlayManager {
       return;
     }
 
+    this.ttsEnabled = ttsEnabled;
     this.isActive = true;
     logger.info('OverlayManager: Showing overlays on all displays');
     this.minShowAtMs = Date.now() + this.preloadDelayMs;

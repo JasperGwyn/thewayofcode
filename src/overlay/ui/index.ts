@@ -304,7 +304,11 @@ if (ttsToggleButton) {
   ttsToggleButton.addEventListener('click', () => {
     const shouldStart = !isTtsActive;
     if (shouldStart) {
-      void ttsStart('en');
+      if (ttsEnabled) {
+        void ttsStart('en');
+      } else {
+        sendLog('TTS: TTS está desactivado, no se puede iniciar');
+      }
     } else {
       ttsStop();
     }
@@ -333,9 +337,13 @@ function loadArticleUrl(payload: ArticleLoadedPayload): void {
     sendLog(`Loading article URL into webview: ${url}`);
     articleView.loadURL(url);
 
-    // 🔥 AUTO-TTS: Iniciar TTS automáticamente apenas se sabe el número de poema
-    sendLog(`AUTO-TTS: Iniciando reproducción automática del poema ${articleId}`);
-    void ttsStart('en', articleId);
+    // 🔥 AUTO-TTS: Iniciar TTS automáticamente apenas se sabe el número de poema (solo si está habilitado)
+    if (ttsEnabled) {
+      sendLog(`AUTO-TTS: Iniciando reproducción automática del poema ${articleId}`);
+      void ttsStart('en', articleId);
+    } else {
+      sendLog(`AUTO-TTS: Poema ${articleId} detectado pero TTS está desactivado`);
+    }
   } catch (error) {
     sendLog(`ERROR: Failed to load URL into webview: ${(error as Error).message}`);
   }
@@ -423,7 +431,11 @@ document.addEventListener('keydown', (e: KeyboardEvent) => {
   if (e.repeat) return;
   const key = e.key.toLowerCase();
   if (key === 't') {
-    void ttsStart('en');
+    if (ttsEnabled) {
+      void ttsStart('en');
+    } else {
+      sendLog('TTS: TTS está desactivado, no se puede iniciar');
+    }
   } else if (key === 'p') {
     ttsTogglePause();
   } else if (key === 's') {
@@ -436,7 +448,11 @@ onKeyboardTts((payload: { action: 'start' | 'stop' | 'toggle'; lang?: string; po
   const lang = payload.lang === 'es' ? 'es' : 'en';
   const poemChapterOverride = payload.poemChapter ?? currentArticleId;
   if (action === 'start') {
-    void ttsStart(lang === 'es' ? 'es' : 'en', poemChapterOverride);
+    if (ttsEnabled) {
+      void ttsStart(lang === 'es' ? 'es' : 'en', poemChapterOverride);
+    } else {
+      sendLog('TTS: TTS está desactivado, no se puede iniciar');
+    }
   } else if (action === 'stop') {
     ttsStop();
   } else if (action === 'toggle') {
